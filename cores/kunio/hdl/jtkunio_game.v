@@ -95,7 +95,7 @@ module jtkunio_game(
 // clock enable signals
 wire [ 3:0] cen24;
 wire [ 1:0] cen48;
-wire        cen12, cen6, cen3, cen1p5; // 24 MHz based
+wire        cen_12, cen_6, cen_3, cen_1p5; // 24 MHz based
 
 // CPU bus
 wire [ 7:0] cpu_dout, pcm_dout,
@@ -110,21 +110,21 @@ wire [ 8:0] h;
 
 // SDRAM
 wire [19:0] char_addr;
-wire [31:0] char_data;
-wire [16:0] obj_addr;
-wire [31:0] obj_data;
-wire        main_cs, char_cs, obj_cs,
-            init_n;
-wire [17:0] pcm_addr;
-wire [19:0] main_addr;
-wire [ 7:0] main_data, pcm_data;
-wire        main_ok, obj_ok, pcm_ok, pcm_bank;
+wire [31:0] char_data, scr_data, obj_data;
+wire        main_cs, snd_cs, char_cs, scr_cs, obj_cs;
+wire [17:0] obj_addr;
+wire [16:0] scr_addr, pcm_addr;
+wire [15:0] main_addr;
+wire [14:0] snd_addr;
+wire [13:0] char_addr;
+wire [ 7:0] main_data, pcm_data, snd_data;
+wire        main_ok, snd_ok, char_ok scr_ok, obj_ok, pcm_ok;
 wire        flip;
 
-assign cen12      = cen24[0];
-assign cen6       = cen24[1];
-assign cen3       = cen24[2];
-assign cen1p5     = cen24[3];
+assign cen_12     = cen24[0];
+assign cen_6      = cen24[1];
+assign cen_3      = cen24[2];
+assign cen_1p5    = cen24[3];
 assign pxl2_cen   = cen48[0];
 assign pxl_cen    = cen48[1];
 // The game does not write to the SDRAM
@@ -132,7 +132,7 @@ assign ba_wr      = 0;
 assign ba0_din    = 0;
 assign ba0_din_m  = 0;
 assign debug_view = 0;
-assign dip_flip   = ~flip;
+assign dip_flip   = flip;
 
 // The CPUs/sound use the 24 MHz clock
 jtframe_frac_cen #( .W( 4), .WC( 2)) u_cen24(
@@ -152,32 +152,21 @@ jtframe_frac_cen #( .W( 2), .WC( 4)) u_cen48(
     .cenb (        )
 );
 
-
 jtkunio_main u_main(
     .rst         ( rst          ),
     .clk         ( clk          ),
-    .cpu_cen     ( pxl_cen      ),
-    .int_n       ( int_n        ),
-    .ctrl_type   ( ctrl_type    ),
+    .cen_1p5     ( cen_1p5      ),
 
     .cpu_addr    ( cpu_addr     ),
     .cpu_rnw     ( cpu_rnw      ),
     .cpu_dout    ( cpu_dout     ),
 
-    .flip        ( flip         ),
-    .LVBL        ( LVBL         ),
-    .LHBL        ( LHBL         ),
-    .hcnt        ( h[2:0]       ),
     .dip_pause   ( dip_pause    ),
-    .init_n      ( init_n       ),
+    // video
+    .flip        ( flip         ),
+    .scrpos      ( scrpos       ),
 
-    .char_en     ( char_en      ),
-    .obj_en      ( obj_en       ),
-    .video_enq   ( video_en     ),
-
-    .attr_cs     ( attr_cs      ),
-    .vram_cs     ( vram_cs      ),
-    .vram_msb    ( vram_msb     ),
+    .ram_cs      ( ram_cs       ),
     .pal_cs      ( pal_cs       ),
     .pal_bank    ( pal_bank     ),
     .attr_dout   ( attr_dout    ),
@@ -185,37 +174,14 @@ jtkunio_main u_main(
     .vram_dout   ( vram_dout    ),
 
     // Sound
-    .fm_cs       ( fm_cs        ),
-    .pcm_cs      ( oki_cs       ),
-    .pcm_bank    ( pcm_bank     ),
-    .pcm_dout    ( pcm_dout     ),
-
-    // DMA
-    .dma_go      ( dma_go       ),
-    .busrq_n     ( ~busrq       ),
-    .busak_n     ( busak_n      ),
+    .snd_irq     ( snd_irq      ),
+    .snd_latch   ( snd_latch    ),
 
     .joystick1   ( joystick1    ),
     .joystick2   ( joystick2    ),
-    .start_button(start_button  ),
+    .start       (start_button  ),
     .coin        ( coin_input[0]),
-    .service     ( service      ),
-    .test        ( dip_test     ),
 
-    .mouse_1p    ( mouse_1p[7:0]),
-    .mouse_2p    ( mouse_2p[7:0]),
-
-    // NVRAM
-    .prog_addr   ( ioctl_addr[12:0] ),
-    .prog_data   ( ioctl_dout   ),
-    .prog_din    ( ioctl_din    ),
-    .prog_we     ( ioctl_wr     ),
-    .prog_ram    ( ioctl_ram    ),
-
-    .kabuki_we   ( kabuki_we    ),
-    .kabuki_en   ( kabuki_en    ),
-
-    .debug_bus   ( debug_bus    ),
     // ROM
     .rom_addr    ( main_addr    ),
     .rom_cs      ( main_cs      ),
@@ -248,11 +214,13 @@ jtkunio_snd u_snd(
     .snd        ( snd           )
 );
 `else
-    assign pcm_addr = 0;
     assign sample   = 0;
     assign game_led = 0;
     assign snd      = 0;
-    assign pcm_dout = 0;
+    assign pcm_cs   = 0;
+    assign snd_cs   = 0;
+    assign pcm_addr = 0;
+    assign snd_addr = 0;
 `endif
 
 jtkunio_video u_video(
@@ -269,10 +237,7 @@ jtkunio_video u_video(
     .VS         ( VS            ),
     .h          ( h             ),
     .flip       ( flip          ),
-    .video_en   ( video_en      ),
-    .char_en    ( char_en       ),
 
-    .pal_bank   ( pal_bank      ),
     .pal_cs     ( pal_cs        ),
     .vram_msb   ( vram_msb      ),
     .vram_cs    ( vram_cs       ),
@@ -302,12 +267,11 @@ jtkunio_video u_video(
     .blue       ( blue          ),
     .gfx_en     ( gfx_en        )
 );
-/* xxverilator tracing_off */
+
 jtkunio_sdram u_sdram(
     .rst        ( rst           ),
     .clk        ( clk           ),
     .LVBL       ( LVBL          ),
-    .init_n     ( init_n        ),
     .ctrl_type  ( ctrl_type     ),
 
     .main_cs    ( main_cs       ),
@@ -348,9 +312,6 @@ jtkunio_sdram u_sdram(
 
     .downloading( downloading   ),
     .dwnld_busy ( dwnld_busy    ),
-
-    .kabuki_we  ( kabuki_we     ),
-    .kabuki_en  ( kabuki_en     ),
 
     .ioctl_addr ( ioctl_addr    ),
     .ioctl_dout ( ioctl_dout    ),

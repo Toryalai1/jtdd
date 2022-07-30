@@ -17,23 +17,23 @@
     Date: 30-7-2022 */
 
 module jtkunio_sound(
-    input           clk,        // 24 MHz
-    input           rst,
-    input           cen6,
-    input           H8,
+    input             clk,        // 24 MHz
+    input             rst,
+    input             cen6,
+    input             H8,
     // communication with main CPU
-    input           snd_irq,
-    input   [ 7:0]  snd_latch,
+    input             snd_irq,
+    input      [ 7:0] snd_latch,
     // ROM
-    output  [14:0]  rom_addr,
-    output  reg     rom_cs,
-    input   [ 7:0]  rom_data,
-    input           rom_ok,
+    output     [14:0] rom_addr,
+    output reg        rom_cs,
+    input      [ 7:0] rom_data,
+    input             rom_ok,
 
-    output  [16:0]  pcm_addr,
-    output          pcm_cs,
-    input   [ 7:0]  pcm_data,
-    input           pcm_ok,
+    output reg [16:0] pcm_addr,
+    output            pcm_cs,
+    input      [ 7:0] pcm_data,
+    input             pcm_ok,
 
     // Sound output
     output signed [15:0] sound,
@@ -47,6 +47,7 @@ reg         [ 7:0] cpu_din;
 wire               RnW, firq_n, irq_n;
 reg                ram_cs, latch_cs, ad_cs, fm_cs
                    pcm_start, pcm_stop, nmi_n;
+reg         [12:0] pcm_cnt;
 wire               cen_fm, cen_fm2;
 wire signed [11:0] pcm_snd;
 wire signed [15:0] fm_snd;
@@ -105,6 +106,16 @@ always @(*) begin
               latch_cs ? snd_latch :
               fm_cs    ? fm_dout
               8'hff;
+end
+
+always @(*) begin
+    pcm_addr[14:0] = { pcm_msb, pcm_cnt };
+    case( pcm_ce )
+        1: pcm_addr[16:15]=0;
+        2: pcm_addr[16:15]=1;
+        4: pcm_addr[16:15]=2;
+        default: pcm_addr[16:15]=0;
+    endcase
 end
 
 always @(posedge clk, posedge rst) begin
