@@ -148,6 +148,7 @@ jtframe_frac_cen #( .W( 2), .WC( 4)) u_cen48(
     .cenb (        )
 );
 
+`ifndef NOMAIN
 jtkunio_main u_main(
     .rst         ( rst          ),
     .clk         ( clk          ),
@@ -191,6 +192,20 @@ jtkunio_main u_main(
     .rom_data    ( main_data    ),
     .rom_ok      ( main_ok      )
 );
+`else
+    assign main_cs  = 0;
+    assign pal_cs   = 0;
+    assign ram_cs   = 0;
+    assign objram_cs= 0;
+    assign scrram_cs= 0;
+    assign snd_irq  = 0;
+    assign snd_latch= 0;
+    assign main_addr= 0;
+    assign cpu_addr = 0;
+    assign cpu_rnw  = 1;
+    assign cpu_dout = 0;
+    assign scrpos   = 0;
+`endif
 
 `ifndef NOSOUND
 jtkunio_sound u_snd(

@@ -74,7 +74,7 @@ wire        Vinit;
 
 // Easy numbers for now
 jtframe_vtimer #(
-    .HB_START   ( 9'd256    ),
+    .HB_START   ( 9'd255    ),
     .HB_END     ( 9'd383    )
 ) u_vtimer (
     .clk     ( clk          ),
