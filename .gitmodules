@@ -10,3 +10,6 @@
 [submodule "modules/jt6295"]
 	path = modules/jt6295
 	url = https://github.com/jotego/jt6295.git
+[submodule "modules/jtopl"]
+	path = modules/jtopl
+	url = https://github.com/jotego/jtopl.git

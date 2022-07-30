@@ -1,4 +1,5 @@
-rom/*
+rom/*.rom
+*.xml
 *.bak
 cores/*/mister/*
 cores/*/mist/*

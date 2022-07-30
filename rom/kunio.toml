@@ -1,0 +1,46 @@
+[global]
+# info = [ {tag="mameversion", value="0229"} ]
+mraauthor=["jotego"]
+
+[features]
+# ddr = true
+# cheat=true
+beta=true
+# nvram = 43008
+# qsound=true
+
+[parse]
+sourcefile="renegade.cpp"
+skip.bootlegs=true
+
+[buttons]
+core=4 # max number of buttons supported by the core
+Names = [
+    { names="Hit Left,Jump,Hit Right"},
+]
+
+[rbf]
+name="jtkunio"
+
+[dipsw]
+delete = [ "Unused", "Unknown" ]
+bitcnt = 16
+
+
+[ROM]
+# values starting with $ refer to macro definitions in the .def file
+# or arguments passed to mame2mra
+regions = [
+    { name="maincpu"      }, # 6502
+    { name="audiocpu", start=$BA1_START, No_offset=true },
+    { name="adpcm"                      },
+    { name="chars",    start=$BA2_START },
+    { name="tiles"                      },
+    { name="sprites",  start=$BA3_START },
+    { name="mcu:mcu",  start=$PROM_START},
+]
+
+order = [
+    "maincpu", "audiocpu", "adpcm", "chars",
+    "tiles", "sprites", "mcu:mcu"
+]

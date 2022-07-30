@@ -1,4 +1,4 @@
-# JTDD FPGA Clone of Double Dragon 1/2 arcade PCBs by Jose Tejada (@topapate)
+# JTDD FPGA Arcade Hardware Jose Tejada (@topapate)
 
 You can show your appreciation through
     * Patreon: https://patreon.com/topapate
@@ -9,6 +9,13 @@ Yes, you always wanted to have a Double Dragon arcade board at home. First you c
 What you get with this is an extremely accurate (allegedly 100% accurate) clone of the original hardware. Bus timing and minor details have been observed and you should notice quite a different feeling when comparing the game to an emulator.
 
 I hope you will have as much fun with it as I had it while making it!
+
+# Compatible Hardware
+
+This repository contains hardware designed for FPGA compatible with the following systems:
+
+- Renegade
+- Double Dragon 1 & 2
 
 # Troubleshooting
 
@@ -132,33 +139,62 @@ Jose Tejada Gomez. Twitter @topapate
 Project is hosted in http://www.github.com/jotego/jtdd
 License: GPL3, you are obligued to publish your code if you use mine
 
-Special thanks to Greg Miller, Bruno Silva
+Special thanks to Greg Miller, Bruno Silva and to:
 
+```
+Adrian                                          Fabio                                   Leslie Law                              RetroDriven
+AkaiFutari                                      Fay Dek                                 Lewis Waddington                        RetroShop.pt
+Alan Steremberg                                 Filip Kindt                             loloC2C                                 Richard Gregory
+albconde                                        FRANCISCO JAVIER FUENTES MORENO         Luis F Giron                            Rob Young
+Alex                                            Frank Wolf                              Manuel                                  Roberto Abdelkader Martínez Pérez
+Alex Hoerr                                      Fred Fryolator                          Manuel Antoni                           Roberto Lari
+Allen Tipper                                    Frédéric Mahé                           Manuel Astudillo                        Roland
+Amineko Stone                                   Fredrik Berglind                        Manuel Fernández                        Rolf-Karsten Bråten
+Amosfear                                        FULLSET                                 Manuelfx                                Roman Buser
+Andrew Boudreau                                 Funkycochise                            Marco Tavian                            Ryan Fig
+Andrew Francomb                                 furrtek                                 Mario Salvini                           RyLe
+Andrew Moore                                    Gary Shepherdson                        Mark Paterson                           Rysha
+Andylithia                                      Geert Oost                              Mary Marshall                           Salvador Perugorria Lorente
+Andyways                                        Geoff Connell                           Matt Charlesworth                       Samuli Tuomola
+Anthony Bolek                                   Gonzalo López                           Matt Elder                              sawf01
+Aqy                                             Gregory Hogan                           Matteo Parolin                          Scralings
+Arcade Express                                  Guillermo Tunon                         Matthew Humphrey                        Sebastien COCHET
+Arnaud Jacquemin                                Guinness                                matthew tecchio                         Sembiance
+AtariSTFan                                      Henry R                                 Matthew Young                           Shane Lynch
+Bibiabho Astoporri                              Herbert Krammer                         mattyhochs                              Shane Yates
+Blue1597                                        Humanoide70                             McNathan                                Shawn Wheatley
+Brett McAlpine                                  Ishmael Hallin                          Michael Scanlon                         Shogun7
+Brian Sallee                                    Jacques Henri                           Michael Stegen                          SJohansson
+Bruno Silva                                     James DeRose                            Mick Stone                              skywalky
+Bryan Siemon                                    James Williams                          Miguel Angel Rodriguez Jodar            SmokeMonster
+Buster D                                        JD                                      Mikael Tillander                        SteelRush
+Carl Hagström                                   Jeff Gerstmann                          Mike Holzinger                          Stefan Nordkvist
+Carlos Del Alamo                                Jeff O'Meara                            Mister JBAM                             Stephen Marshall
+Charles Sagett                                  Jeremy Glass                            MrX-8B                                  Stephen Pearce
+Chris Jardine                                   Jeremy Hopkins                          Neil Maguire                            Steven
+Chris Mawman                                    Jeremy Kaiman                           Nelson Jr                               Steven Wilson
+Christian Bailey                                Jérôme Moreau                           Nelson Machado                          Stuart Fisk
+Christopher Harvey                              Jeruro                                  Niall O'Higgins                         Suvodip Mitra
+Christopher rumford                             Jesus Garcia                            Nicolas Hamel                           Sweetlilmre
+Christopher Tuckwell                            Jo Tomiyori                             Obiwantje                               Thomas Davies
+Dana Rich                                       Joe Kalwitz                             Oliver Jaksch                           Thomas Tahsin-Bey
+Daniel Bauza                                    Johannes Reß                            Oliver Seitz                            Toby Boreham
+Daniel Casadevall                               John Kelley                             Oliver Wndmth                           Tony Peters
+Daniel Hochman                                  John Klimek                             Oscar Jacobsson                         type78
+DarkStar7                                       John Perry                              Oscar Laguna Garcia                     UKShark
+Darren Newman                                   John Stringer                           Outchocinco                             Ultrarobotninja
+David Filskov                                   John Williams                           Owlnonymous                             Víctor Gomariz Ladrón de Guevara
+David Taylor                                    Jon Taylor                              Paul Herbert                            Videodr0me
+Don Gafford                                     Jootec from Mars                        Paulie B                                Violeta Martin Fernandez
+Duane Hembrick                                  Jorge Galán                             Phillip McMahon                         Visa-Valtteri Pimiä
+Dustin Gray                                     Jorge Slowfret                          Popov                                   vladimir
+Dyllon Moseychuck                               Juan Diego Sánchez Noguera              Porkchop Express                        Vorvek
+Ed Balan                                        Juan Manuel Sandoval Jr                 PsyFX                                   Wiedo Belochkin
+Eduard Mateo                                    Keith Kelly                             QcRetro                                 William Clemens
+EDUARDO ARANCIBIA PASTOR                        Ken ottosson                            Rafa Davila                             wvc
+emceebois                                       Kevin Bidwell                           Raziel                                  Xtro
+Eoin Gibney                                     Kyle Good                               remowilliams                            Xzarian
+Evan Clarke                                     Kyle Troutman                           Renan Eler                              Zimmermann
+```
 
 Thank you all!
-
-+--------------------------------------------------------------------------------+
-|oooooooooooooooooooooooooooooooooo+++++++++++ooooooooooooooooooooooooooooooooooo|
-|ooooooooooooooooooooooooooooooooo+. .    . .+ooooooooooooooooooooooooooooooooooo|
-|ooooooooooooooooooooooooooooooooo~         :o++ooooooooooooooooooooooooooooooooo|
-|oooooooooooooooooooooooooooo+ooo+.        .++.:oo+oo+oooooo+o+oo+oooooo++ooooooo|
-|ooooooooooooooooooooooooo+.......          .. .............................:oooo|
-|oooooooooooooooooooooooo+.                                                .+o+oo|
-|oooooooooooooooooooooooo:                                                 :o:.+o|
-|ooooooooooooooooooooooo+.                                                .++.:oo|
-|ooooooooooooooooooooooo:.....           ...........          ....... ....:o~.+oo|
-|oooooooooooooooooooooooo+++++~         ~+++:++:++++.         ++++++++++++++.+ooo|
-|oooooooooooooooooooooooooo+:~         .++.~:::::::.         .o+.~:::::::::::+ooo|
-|oooooooooooooooooooooooooooo:         :o~.+oooooo+.         ++.~oooooooooooooooo|
-|ooo~........~oooooooooooooo+.        .++.:ooooooo+         ~o:.+oooooooooooooooo|
-|oo:         ~o++ooooooooooo.         +o~.ooooooo+.        .++.~ooooooooooooooooo|
-|oo.         :+.:ooooooooo+.         ~o+.+ooooooo:         ~o:.+ooooooooooooooooo|
-|oo.         ...~:::::::..          .++.~ooooooo+.        .o+.:oooooooooooooooooo|
-|oo~                               ~o+..+ooooooo~         +o~.+oooooooooooooooooo|
-|oo+.                           .~+o+..+ooooooo+.        .o+.+ooooooooooooooooooo|
-|oooo~.                       .:+o+..:+oooooooo.         +o..oooooooooooooooooooo|
-|ooooo+:...              ..~:+++:..:+ooooooooo+         .o+.+oooooooooooooooooooo|
-|ooooooo+++::::::::::++++++++~~.~++ooooooooooo+:+:::::+:++.~ooooooooooooooooooooo|
-|ooooooooo+++:::::::::~:~~~~:++oooooooooooooooooo+::::~::~.+ooooooooooooooooooooo|
-|oooooooooooooo+o+oo++++o+ooooooooooooooooooooooo+o+++o++o+oooooooooooooooooooooo|
-+--------------------------------------------------------------------------------+
