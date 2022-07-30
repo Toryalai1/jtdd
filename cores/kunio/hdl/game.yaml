@@ -1,0 +1,38 @@
+game:
+  - from: kunio
+    get:
+      - jtkunio_game.v
+      - jtkunio_main.v
+      - jtkunio_sound.v
+      - jtkunio_sdram.v
+      - jtkunio_video.v
+      - jtkunio_char.v
+      - jtkunio_scr.v
+      - jtkunio_obj.v
+jtframe:
+  - from: clocking
+    get:
+      - jtframe_frac_cen.v
+  - from: cpu
+    get:
+      - jtframe_6809.yaml
+      - t65/t65.yaml
+      # MCU
+      - 6801_core.sv
+      - jtframe_6801mcu.v
+  - get:
+      - jtframe_ff.v
+  - from: ram
+    get:
+      - jtframe_ram.v
+      - jtframe_obj_buffer.v
+  - from: sound
+    get:
+      - jtframe_mixer.v
+modules:
+  jt:
+    - name: jt5205
+  other:
+    - get:
+      - jtopl/hdl/jtopl2.yaml
+

@@ -1,22 +1,22 @@
-/*  This file is part of JTPANG.
-    JTPANG program is free software: you can redistribute it and/or modify
+/*  This file is part of JTKUNIO.
+    JTKUNIO program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     ( at your option) any later version.
 
-    JTPANG program is distributed in the hope that it will be useful,
+    JTKUNIO program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with JTPANG.  If not, see <http://www.gnu.org/licenses/>.
+    along with JTKUNIO.  If not, see <http://www.gnu.org/licenses/>.
 
     Author: Jose Tejada Gomez. Twitter: @topapate
     Version: 1.0
-    Date: 21-5-2022 */
+    Date: 30-7-2022 */
 
-module jtpang_game(
+module jtkunio_game(
     input           rst,
     input           clk,
     input           rst24,
@@ -227,22 +227,21 @@ jtkunio_main u_main(
 jtkunio_snd u_snd(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
-    .fm_cen     ( fm_cen        ),
-    .pcm_cen    ( pcm_cen       ),
+    .cen6       ( cen6          ),
+    .H8         ( H8            ),
 
-    .cpu_dout   ( cpu_dout      ),
-    .wr_n       ( cpu_rnw       ),
-    .a0         ( cpu_addr[0]   ),
-    .fm_cs      ( fm_cs         ),
-    .pcm_dout   ( pcm_dout      ),
-    .pcm_cs     ( oki_cs        ),
+    .snd_latch  ( snd_latch     ),
+    .snd_irq    ( snd_irq       ),
 
-    .enable_fm  ( enable_fm     ),
-    .enable_psg ( enable_psg    ),
+    .rom_addr   ( snd_addr      ),
+    .rom_data   ( snd_data      ),
+    .rom_cs     ( snd_cs        ),
+    .rom_ok     ( snd_ok        ),
 
-    .rom_addr   ( pcm_addr      ),
-    .rom_data   ( pcm_data      ),
-    .rom_ok     ( pcm_ok        ),
+    .pcm_addr   ( pcm_addr      ),
+    .pcm_data   ( pcm_data      ),
+    .pcm_cs     ( pcm_cs        ),
+    .pcm_ok     ( pcm_ok        ),
 
     .peak       ( game_led      ),
     .sample     ( sample        ),
@@ -316,8 +315,13 @@ jtkunio_sdram u_sdram(
     .main_data  ( main_data     ),
     .main_ok    ( main_ok       ),
 
+    .snd_addr   ( snd_addr      ),
+    .snd_cs     ( snd_cs        ),
+    .snd_data   ( snd_data      ),
+    .snd_ok     ( snd_ok        ),
+
     .pcm_addr   ( pcm_addr      ),
-    .pcm_cs     ( 1'b1          ),
+    .pcm_cs     ( pcm_cs        ),
     .pcm_data   ( pcm_data      ),
     .pcm_ok     ( pcm_ok        ),
 
