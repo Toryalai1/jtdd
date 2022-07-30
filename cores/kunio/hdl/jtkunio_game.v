@@ -33,8 +33,8 @@ module jtkunio_game(
     // cabinet I/O
     input   [ 1:0]  start_button,
     input   [ 1:0]  coin_input,
-    input   [ 7:0]  joystick1,
-    input   [ 7:0]  joystick2,
+    input   [ 6:0]  joystick1,
+    input   [ 6:0]  joystick2,
 
     // SDRAM interface
     input           downloading,
@@ -59,9 +59,7 @@ module jtkunio_game(
     // RAM/ROM LOAD
     input   [24:0]  ioctl_addr,
     input   [ 7:0]  ioctl_dout,
-    output  [ 7:0]  ioctl_din,
     input           ioctl_wr,
-    input           ioctl_ram,
     output  [21:0]  prog_addr,
     output  [15:0]  prog_data,
     output  [ 1:0]  prog_mask,
@@ -98,27 +96,25 @@ wire [ 1:0] cen48;
 wire        cen_12, cen_6, cen_3, cen_1p5; // 24 MHz based
 
 // CPU bus
-wire [ 7:0] cpu_dout, pcm_dout,
-            vram_dout, attr_dout, pal_dout;
-wire        fm_cs, oki_cs,
-            cpu_rnw, busrq, int_n,
-            pal_cs, vram_msb, vram_cs, attr_cs;
-wire [11:0] cpu_addr;
-wire        char_en, obj_en, video_en, pal_bank;
-wire        dma_go, busak_n, busrq_n;
-wire [ 8:0] h;
+wire [ 7:0] cpu_dout, ram_dout, snd_latch,
+            scr_dout, obj_dout, pal_dout;
+wire        cpu_rnw, int_n, v8, h8, snd_irq,
+            ram_cs, scrram_cs, objram_cs, pal_cs;
+wire [12:0] cpu_addr;
 
 // SDRAM
-wire [19:0] char_addr;
 wire [31:0] char_data, scr_data, obj_data;
-wire        main_cs, snd_cs, char_cs, scr_cs, obj_cs;
+wire        main_cs, snd_cs, pcm_cs,
+            char_cs, scr_cs, obj_cs;
 wire [17:0] obj_addr;
 wire [16:0] scr_addr, pcm_addr;
 wire [15:0] main_addr;
 wire [14:0] snd_addr;
 wire [13:0] char_addr;
 wire [ 7:0] main_data, pcm_data, snd_data;
-wire        main_ok, snd_ok, char_ok scr_ok, obj_ok, pcm_ok;
+wire [ 9:0] scrpos;
+wire        main_ok, snd_ok, pcm_ok,
+            char_ok, scr_ok, obj_ok;
 wire        flip;
 
 assign cen_12     = cen24[0];
@@ -156,8 +152,10 @@ jtkunio_main u_main(
     .rst         ( rst          ),
     .clk         ( clk          ),
     .cen_1p5     ( cen_1p5      ),
+    .LVBL        ( LVBL         ),
+    .v8          ( v8           ),
 
-    .cpu_addr    ( cpu_addr     ),
+    .bus_addr    ( cpu_addr     ),
     .cpu_rnw     ( cpu_rnw      ),
     .cpu_dout    ( cpu_dout     ),
 
@@ -167,20 +165,25 @@ jtkunio_main u_main(
     .scrpos      ( scrpos       ),
 
     .ram_cs      ( ram_cs       ),
+    .scrram_cs   ( scrram_cs    ),
+    .objram_cs   ( objram_cs    ),
     .pal_cs      ( pal_cs       ),
-    .pal_bank    ( pal_bank     ),
-    .attr_dout   ( attr_dout    ),
     .pal_dout    ( pal_dout     ),
-    .vram_dout   ( vram_dout    ),
+    .ram_dout    ( ram_dout     ),
+    .scr_dout    ( scr_dout     ),
+    .obj_dout    ( obj_dout     ),
 
     // Sound
     .snd_irq     ( snd_irq      ),
     .snd_latch   ( snd_latch    ),
 
-    .joystick1   ( joystick1    ),
-    .joystick2   ( joystick2    ),
-    .start       (start_button  ),
-    .coin        ( coin_input[0]),
+    .joystick1   ( joystick1[6:0]),
+    .joystick2   ( joystick2[6:0]),
+    .start       ( start_button ),
+    .coin        ( coin_input   ),
+    .dipsw_a     ( dipsw[ 7:0]  ),
+    .dipsw_b     ( dipsw[15:8]  ),
+    .service     ( service      ),
 
     // ROM
     .rom_addr    ( main_addr    ),
@@ -190,11 +193,11 @@ jtkunio_main u_main(
 );
 
 `ifndef NOSOUND
-jtkunio_snd u_snd(
+jtkunio_sound u_snd(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
-    .cen6       ( cen6          ),
-    .H8         ( H8            ),
+    .cen6       ( cen_6         ),
+    .h8         ( h8            ),
 
     .snd_latch  ( snd_latch     ),
     .snd_irq    ( snd_irq       ),
@@ -211,7 +214,7 @@ jtkunio_snd u_snd(
 
     .peak       ( game_led      ),
     .sample     ( sample        ),
-    .snd        ( snd           )
+    .sound      ( snd           )
 );
 `else
     assign sample   = 0;
@@ -229,33 +232,37 @@ jtkunio_video u_video(
 
     .pxl2_cen   ( pxl2_cen      ),
     .pxl_cen    ( pxl_cen       ),
-    .int_n      ( int_n         ),
 
     .LHBL       ( LHBL          ),
     .LVBL       ( LVBL          ),
     .HS         ( HS            ),
     .VS         ( VS            ),
-    .h          ( h             ),
     .flip       ( flip          ),
+    .h8         ( h8            ),
+    .v8         ( v8            ),
+
+    .scrpos     ( scrpos        ),
 
     .pal_cs     ( pal_cs        ),
-    .vram_msb   ( vram_msb      ),
-    .vram_cs    ( vram_cs       ),
-    .attr_cs    ( attr_cs       ),
-    .wr_n       ( cpu_rnw       ),
+    .ram_cs     ( ram_cs        ),
+    .scrram_cs  ( scrram_cs     ),
+    .objram_cs  ( objram_cs     ),
+    .cpu_wrn    ( cpu_rnw       ),
     .cpu_addr   ( cpu_addr      ),
     .cpu_dout   ( cpu_dout      ),
-    .vram_dout  ( vram_dout     ),
-    .attr_dout  ( attr_dout     ),
-    .pal_dout   ( pal_dout      ),
 
-    .dma_go     ( dma_go        ),
-    .busak_n    ( busak_n       ),
-    .busrq      ( busrq         ),
+    .ram_dout   ( ram_dout      ),
+    .scr_dout   ( scr_dout      ),
+    .obj_dout   ( obj_dout      ),
+    .pal_dout   ( pal_dout      ),
 
     .char_addr  ( char_addr     ),
     .char_data  ( char_data     ),
-    .char_cs    ( char_cs       ),
+    .char_ok    ( char_ok       ),
+
+    .scr_addr   ( scr_addr      ),
+    .scr_data   ( scr_data      ),
+    .scr_ok     ( scr_ok        ),
 
     .obj_addr   ( obj_addr      ),
     .obj_data   ( obj_data      ),
@@ -271,8 +278,9 @@ jtkunio_video u_video(
 jtkunio_sdram u_sdram(
     .rst        ( rst           ),
     .clk        ( clk           ),
-    .LVBL       ( LVBL          ),
-    .ctrl_type  ( ctrl_type     ),
+
+    .hs         ( HS            ),
+    .vs         ( VS            ),
 
     .main_cs    ( main_cs       ),
     .main_addr  ( main_addr     ),
@@ -289,10 +297,13 @@ jtkunio_sdram u_sdram(
     .pcm_data   ( pcm_data      ),
     .pcm_ok     ( pcm_ok        ),
 
-    .char_cs    ( char_cs       ),
-    .char_ok    (               ),
+    .char_ok    ( char_ok       ),
     .char_addr  ( char_addr     ),
     .char_data  ( char_data     ),
+
+    .scr_ok     ( scr_ok        ),
+    .scr_addr   ( scr_addr      ),
+    .scr_data   ( scr_data      ),
 
     .obj_ok     ( obj_ok        ),
     .obj_cs     ( obj_cs        ),
@@ -316,7 +327,6 @@ jtkunio_sdram u_sdram(
     .ioctl_addr ( ioctl_addr    ),
     .ioctl_dout ( ioctl_dout    ),
     .ioctl_wr   ( ioctl_wr      ),
-    .ioctl_ram  ( ioctl_ram     ),
 
     .prog_addr  ( prog_addr     ),
     .prog_data  ( prog_data     ),

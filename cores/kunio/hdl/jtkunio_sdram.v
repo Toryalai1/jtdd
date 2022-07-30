@@ -19,6 +19,8 @@
 module jtkunio_sdram(
     input           rst,
     input           clk,
+    input           vs,
+    input           hs,
 
     // Main CPU
     input            main_cs,
@@ -39,13 +41,11 @@ module jtkunio_sdram(
     output           pcm_ok,
 
     // Char layer
-    input            char_cs,
     output           char_ok,
     input    [13:0]  char_addr,
     output   [31:0]  char_data,
 
     // Scroll layer
-    input            scr_cs,
     output           scr_ok,
     input    [16:0]  scr_addr,
     output   [31:0]  scr_data,
@@ -73,13 +73,11 @@ module jtkunio_sdram(
     // ROM LOAD
     input            downloading,
     output           dwnld_busy,
-    output           kabuki_we,
-    output reg       kabuki_en,
 
     input    [24:0]  ioctl_addr,
     input    [ 7:0]  ioctl_dout,
     input            ioctl_wr,
-    output reg [21:0] prog_addr,
+    output    [21:0] prog_addr,
     output    [15:0] prog_data,
     output    [ 1:0] prog_mask,
     output    [ 1:0] prog_ba,
@@ -102,7 +100,9 @@ localparam [24:0] BA1_START   = `BA1_START,
 
 wire        is_char, is_scr, is_obj, prom_we;
 reg  [24:0] post_addr;
+wire        gfx_cs;
 
+assign gfx_cs     = ~vs & ~hs;
 assign dwnld_busy = downloading;
 assign is_char    = prog_ba==2 && ioctl_addr[17:15]<1;
 assign is_scr     = prog_ba==2 && !is_char;
@@ -114,7 +114,7 @@ always @* begin
     if( is_char )
         post_addr[3:0] = { ioctl_addr[2:0], ioctl_addr[3] };
     if( is_scr | is_obj )
-        post_addr[5:0] = { ioctl_addr[3:0], ioctl_addr[5:3] };
+        post_addr[5:0] = { ioctl_addr[3:0], ioctl_addr[5:4] };
 end
 
 jtframe_dwnld #(
@@ -142,7 +142,7 @@ jtframe_dwnld #(
 
 jtframe_rom_1slot #(
     .SLOT0_DW( 8),
-    .SLOT0_AW(15)
+    .SLOT0_AW(16)
 ) u_bank0(
     .rst         ( rst        ),
     .clk         ( clk        ),
@@ -177,10 +177,10 @@ jtframe_rom_2slots #(
     .slot0_cs   ( snd_cs    ),
     .slot0_ok   ( snd_ok    ),
 
-    .slot0_addr ( pcm_addr  ),
-    .slot0_dout ( pcm_data  ),
-    .slot0_cs   ( pcm_cs    ),
-    .slot0_ok   ( pcm_ok    ),
+    .slot1_addr ( pcm_addr  ),
+    .slot1_dout ( pcm_data  ),
+    .slot1_cs   ( pcm_cs    ),
+    .slot1_ok   ( pcm_ok    ),
 
     // SDRAM controller interface
     .sdram_addr ( ba1_addr  ),
@@ -196,21 +196,20 @@ jtframe_rom_2slots #(
     .SLOT0_DW   (         32 ), // Char
     .SLOT0_AW   (         14 ),
 
-    .SLOT0_DW   (         32 ), // Scroll
-    .SLOT0_AW   (         17 )
-
+    .SLOT1_DW   (         32 ), // Scroll
+    .SLOT1_AW   (         17 )
 ) u_bank2(
     .rst        ( rst        ),
     .clk        ( clk        ),
 
     .slot0_addr ( char_addr  ),
     .slot0_dout ( char_data  ),
-    .slot0_cs   ( char_cs    ),
+    .slot0_cs   ( gfx_cs     ),
     .slot0_ok   ( char_ok    ),
 
     .slot1_addr ( scr_addr   ),
     .slot1_dout ( scr_data   ),
-    .slot1_cs   ( scr_cs     ),
+    .slot1_cs   ( gfx_cs     ),
     .slot1_ok   ( scr_ok     ),
 
     // SDRAM controller interface
@@ -232,7 +231,7 @@ jtframe_rom_1slot #(
 
     .slot0_addr ( obj_addr   ),
     .slot0_dout ( obj_data   ),
-    .slot0_cs   ( obj_cs     ),
+    .slot0_cs   ( gfx_cs     ),
     .slot0_ok   ( obj_ok     ),
 
     // SDRAM controller interface

@@ -7,8 +7,9 @@ game:
       - jtkunio_sdram.v
       - jtkunio_video.v
       - jtkunio_char.v
-      - jtkunio_scr.v
+      - jtkunio_scroll.v
       - jtkunio_obj.v
+      - jtkunio_colmix.v
 jtframe:
   - from: clocking
     get:
@@ -25,10 +26,17 @@ jtframe:
   - from: ram
     get:
       - jtframe_ram.v
+      - jtframe_dual_ram16.v
       - jtframe_obj_buffer.v
+  - from: video
+    get:
+      - jtframe_vtimer.v
   - from: sound
     get:
       - jtframe_mixer.v
+  - from: sdram
+    get:
+      - jtframe_dwnld.v
 modules:
   jt:
     - name: jt5205

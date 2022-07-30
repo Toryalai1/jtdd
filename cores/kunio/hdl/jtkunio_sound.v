@@ -20,7 +20,7 @@ module jtkunio_sound(
     input             clk,        // 24 MHz
     input             rst,
     input             cen6,
-    input             H8,
+    input             h8,
     // communication with main CPU
     input             snd_irq,
     input      [ 7:0] snd_latch,
@@ -44,21 +44,24 @@ module jtkunio_sound(
 wire        [ 7:0] cpu_dout, ram_dout, fm_dout;
 wire        [15:0] A;
 reg         [ 7:0] cpu_din;
-wire               RnW, firq_n, irq_n;
-reg                ram_cs, latch_cs, ad_cs, fm_cs
-                   pcm_start, pcm_stop, nmi_n;
-reg         [12:0] pcm_cnt;
+wire               cpu_rnw, firq_n, irq_n;
+reg                ram_cs, latch_cs, fm_cs,
+                   pcm_start, pcm_stop, nmi_n,
+                   oki_s, pcm_rst;
+reg         [13:0] pcm_cnt;
 wire               cen_fm, cen_fm2;
 wire signed [11:0] pcm_snd;
 wire signed [15:0] fm_snd;
 wire               pcm_sample;
 reg         [ 1:0] pcm_msb;
-reg                pcm_s;
+reg                pcm_s, ctrl_cs;
 reg         [ 2:0] pcm_ce;
-reg                cen_oki, last_H8, H8_edge, pcm_cen;
+reg                cen_oki, last_h8, h8_edge, pcm_cen;
 wire               cpu_cen;
+wire        [ 3:0] pcm_din;
 
 assign rom_addr = A[14:0];
+assign pcm_din  = pcm_cnt[0] ? pcm_data[7:4] : pcm_data[3:0];
 
 localparam [7:0] FMGAIN  = 8'h08,
                  PCMGAIN = 8'h10;
@@ -101,15 +104,15 @@ always @(*) begin
 end
 
 always @(*) begin
-    cpu_din = rom_cs   ? rom_data :
-              ram_cs   ? ram_dout :
+    cpu_din = rom_cs   ? rom_data  :
+              ram_cs   ? ram_dout  :
               latch_cs ? snd_latch :
-              fm_cs    ? fm_dout
+              fm_cs    ? fm_dout   :
               8'hff;
 end
 
 always @(*) begin
-    pcm_addr[14:0] = { pcm_msb, pcm_cnt };
+    pcm_addr[14:0] = { pcm_msb, pcm_cnt[13:1] };
     case( pcm_ce )
         1: pcm_addr[16:15]=0;
         2: pcm_addr[16:15]=1;
@@ -127,7 +130,7 @@ always @(posedge clk, posedge rst) begin
         pcm_rst <= 1;
         nmi_n   <= 1;
     end else begin
-        if( ctrl_cs && !RnW )
+        if( ctrl_cs && !cpu_rnw )
             { oki_s, pcm_ce, pcm_msb } <= cpu_dout[5:0];
         if( pcm_start ) begin
             nmi_n   <= 1;
@@ -144,9 +147,9 @@ always @(posedge clk, posedge rst) begin
 end
 
 always @(posedge clk) begin
-    last_H8 <= H8;
-    H8_edge <= H8 && !last_H8;
-    cen_oki <= H8_edge;
+    last_h8 <= h8;
+    h8_edge <= h8 && !last_h8;
+    cen_oki <= h8_edge;
 end
 
 jtframe_ff u_ff(
@@ -166,7 +169,7 @@ jtframe_sys6809 #(.RAM_AW(12)) u_cpu(
     .clk        ( clk       ),
     .cen        ( cen6      ),    // This is normally the input clock to the CPU
     .cpu_cen    ( cpu_cen   ),   // 1/4th of cen -> 1.5MHz
-
+    .VMA        (           ),
     // Interrupts
     .nIRQ       ( irq_n     ),
     .nFIRQ      ( firq_n    ),
@@ -174,10 +177,9 @@ jtframe_sys6809 #(.RAM_AW(12)) u_cpu(
     .irq_ack    (           ),
     // Bus sharing
     .bus_busy   ( 1'b0      ),
-    .waitn      (           ),
     // memory interface
     .A          ( A         ),
-    .RnW        ( RnW       ),
+    .RnW        ( cpu_rnw   ),
     .ram_cs     ( ram_cs    ),
     .rom_cs     ( rom_cs    ),
     .rom_ok     ( rom_ok    ),
@@ -210,11 +212,11 @@ jtopl2 u_opl(
 );
 
 jt5205 #(.INTERPOL(0)) u_decod(
-    .rst    ( oki_rst   ),
+    .rst    ( pcm_rst   ),
     .clk    ( clk       ),
     .cen    ( cen_oki   ),
     .sel    ( {1'b0, oki_s } ),
-    .din    ( din       ),
+    .din    ( pcm_din   ),
     .sound  ( pcm_snd   ),
     .irq    ( pcm_sample),
     // unused
