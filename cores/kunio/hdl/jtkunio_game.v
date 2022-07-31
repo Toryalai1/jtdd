@@ -211,7 +211,7 @@ jtkunio_main u_main(
     assign cpu_addr = 0;
     assign cpu_rnw  = 1;
     assign cpu_dout = 0;
-    assign scrpos   = 0;
+    assign scrpos   = 10'h100;
     assign flip     = 0;
 `endif
 

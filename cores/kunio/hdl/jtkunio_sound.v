@@ -215,7 +215,7 @@ jt5205 #(.INTERPOL(0)) u_decod(
     .rst    ( pcm_rst   ),
     .clk    ( clk       ),
     .cen    ( cen_oki   ),
-    .sel    ( {1'b0, oki_s } ),
+    .sel    ({oki_s,1'b0}),
     .din    ( pcm_din   ),
     .sound  ( pcm_snd   ),
     .irq    ( pcm_sample),

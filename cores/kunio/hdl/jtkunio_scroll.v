@@ -50,11 +50,11 @@ reg  [15:0] plane0;
 reg  [47:0] pxl_data;
 wire        lower;
 
-assign hsum      = { h[8], h } + ( scrpos - 10'h100);
+assign hsum      = { h[8], h } + ( scrpos - { ~flip, 9'd0 });
 assign cpu_din   = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
 assign scan_addr = { v[7:4], hsum[9:4] };
 assign rom_addr  = { rom_msb, code, v[3:0], 1'b0 }; // 4+8+4+1=17
-assign pxl       = { cur_pal, pxl_data[32], pxl_data[16], pxl_data[0] };
+assign pxl       = { cur_pal, flip ? {pxl_data[47], pxl_data[31], pxl_data[15] } : {pxl_data[32], pxl_data[16], pxl_data[0]} };
 assign lower     = code_msb[1:0]==0;
 
 always @* begin
@@ -98,7 +98,7 @@ always @(posedge clk) if(pxl_cen) begin
         end
     end
     if( hsum[3:0]!=15 ) begin
-        pxl_data <= pxl_data>>1;
+        pxl_data <= flip ? pxl_data<<1 : pxl_data>>1;
     end
 end
 
