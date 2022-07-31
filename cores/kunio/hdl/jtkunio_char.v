@@ -57,9 +57,9 @@ always @(posedge clk) if(pxl_cen) begin
         pal  <= scan_dout[15:14];
         cur_pal <= pal;
         pxl_data <= {
-            rom_data[7], rom_data[6], rom_data[7+8], rom_data[6+8], rom_data[7+8*2], rom_data[6+8*2], rom_data[7+8*3], rom_data[6+8*3],
-            rom_data[5], rom_data[4], rom_data[5+8], rom_data[4+8], rom_data[5+8*2], rom_data[4+8*2], rom_data[5+8*3], rom_data[4+8*3],
-            rom_data[3], rom_data[2], rom_data[3+8], rom_data[2+8], rom_data[3+8*2], rom_data[2+8*2], rom_data[3+8*3], rom_data[2+8*3]
+            rom_data[6], rom_data[7], rom_data[6+8], rom_data[7+8], rom_data[6+8*2], rom_data[7+8*2], rom_data[6+8*3], rom_data[7+8*3],
+            rom_data[4], rom_data[5], rom_data[4+8], rom_data[5+8], rom_data[4+8*2], rom_data[5+8*2], rom_data[4+8*3], rom_data[5+8*3],
+            rom_data[2], rom_data[3], rom_data[2+8], rom_data[3+8], rom_data[2+8*2], rom_data[3+8*2], rom_data[2+8*3], rom_data[3+8*3]
         };
     end else begin
         pxl_data <= pxl_data << 1;
