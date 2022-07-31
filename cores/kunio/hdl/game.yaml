@@ -35,6 +35,7 @@ jtframe:
   - from: sound
     get:
       - jtframe_mixer.v
+      - jtframe_dcrm.v
   - from: sdram
     get:
       - jtframe_dwnld.v

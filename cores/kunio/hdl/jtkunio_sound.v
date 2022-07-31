@@ -51,18 +51,18 @@ reg                ram_cs, latch_cs, fm_cs,
                    oki_s, pcm_rst;
 reg         [13:0] pcm_cnt;
 wire               cen_fm, cen_fm2;
-wire signed [11:0] pcm_snd;
+wire signed [11:0] pcm_snd, pcm_raw;
 wire signed [15:0] fm_snd;
 wire               pcm_sample;
 reg         [ 1:0] pcm_msb;
 reg                ctrl_cs;
 reg         [ 2:0] pcm_ce;
 reg                cen_oki, last_h8, h8_edge;
-wire               cpu_cen, pcm_cen;
+wire               pcm_cen, cpu_cen;
 wire        [ 3:0] pcm_din;
 
 assign rom_addr = A[14:0];
-assign pcm_din  = pcm_cnt[0] ? pcm_data[7:4] : pcm_data[3:0];
+assign pcm_din  = ~pcm_cnt[0] ? pcm_data[7:4] : pcm_data[3:0];
 assign pcm_cs   = nmi_n;
 assign cen_fm   = cen3;
 assign cen_fm2  = cen6;
@@ -217,11 +217,20 @@ jt5205 #(.INTERPOL(0)) u_decod(
     .cen    ( cen_oki   ),
     .sel    ({oki_s,1'b0}),
     .din    ( pcm_din   ),
-    .sound  ( pcm_snd   ),
+    .sound  ( pcm_raw   ),
     .irq    ( pcm_sample),
     // unused
     .vclk_o ( pcm_cen   ),
     .sample (           )
 );
+
+jtframe_dcrm #(.SW(12),.SIGNED_INPUT(1)) u_dcrm (
+    .rst    ( rst           ),
+    .clk    ( clk           ),
+    .sample ( pcm_sample    ),
+    .din    ( pcm_raw       ),
+    .dout   ( pcm_snd       )
+);
+
 
 endmodule
