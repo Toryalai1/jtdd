@@ -14,6 +14,11 @@ cores/*/neptuno/*
 *.raw
 *.hex
 *.f
+*.jpg
+*.fst
+core.def
+defmacros.h
 history
-
+waiver
+game_test.v
 modules/.DS_Store

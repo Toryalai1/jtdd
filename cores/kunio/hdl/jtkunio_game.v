@@ -205,6 +205,7 @@ jtkunio_main u_main(
     assign cpu_rnw  = 1;
     assign cpu_dout = 0;
     assign scrpos   = 0;
+    assign flip     = 0;
 `endif
 
 `ifndef NOSOUND

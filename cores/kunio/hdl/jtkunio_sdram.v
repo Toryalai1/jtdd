@@ -91,6 +91,8 @@ module jtkunio_sdram(
 localparam [24:0] BA1_START   = `BA1_START,
                   BA2_START   = `BA2_START,
                   BA3_START   = `BA3_START,
+                  SCR_START   = `SCR_START,
+                  SCR_OFFSET  = (SCR_START-BA2_START)>>1,
                   PCM_OFFSET  = `PCM_OFFSET,
                   PROM_START  = `PROM_START;
 
@@ -104,7 +106,7 @@ wire        gfx_cs;
 
 assign gfx_cs     = ~vs & ~hs;
 assign dwnld_busy = downloading;
-assign is_char    = prog_ba==2 && ioctl_addr[17:15]<1;
+assign is_char    = prog_ba==2 && ioctl_addr[19:0]<SCR_START[19:0];
 assign is_scr     = prog_ba==2 && !is_char;
 assign is_obj     = prog_ba==3 && !prom_we;
 

@@ -56,12 +56,13 @@ wire               pcm_sample;
 reg         [ 1:0] pcm_msb;
 reg                pcm_s, ctrl_cs;
 reg         [ 2:0] pcm_ce;
-reg                cen_oki, last_h8, h8_edge, pcm_cen;
-wire               cpu_cen;
+reg                cen_oki, last_h8, h8_edge;
+wire               cpu_cen, pcm_cen;
 wire        [ 3:0] pcm_din;
 
 assign rom_addr = A[14:0];
 assign pcm_din  = pcm_cnt[0] ? pcm_data[7:4] : pcm_data[3:0];
+assign pcm_cs   = nmi_n;
 
 localparam [7:0] FMGAIN  = 8'h08,
                  PCMGAIN = 8'h10;
@@ -132,6 +133,10 @@ always @(posedge clk, posedge rst) begin
     end else begin
         if( ctrl_cs && !cpu_rnw )
             { oki_s, pcm_ce, pcm_msb } <= cpu_dout[5:0];
+        if( pcm_stop ) begin
+            nmi_n   <= 1;
+            pcm_rst <= 0;
+        end
         if( pcm_start ) begin
             nmi_n   <= 1;
             pcm_cnt <= 0;

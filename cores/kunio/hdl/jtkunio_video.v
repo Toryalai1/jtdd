@@ -65,12 +65,18 @@ module jtkunio_video(
     input      [3:0]   gfx_en
 );
 
-wire [5:0]  char_pxl, scr_pxl, obj_pxl;
-wire [8:0]  vdump;
+wire [4:0]  char_pxl;
+wire [5:0]  scr_pxl, obj_pxl;
+wire [8:0]  vdump, vf, hf;
 wire [8:0]  vrender;
-wire [8:0]  H;
+wire [8:0]  hdump;
 wire        Hinit;
 wire        Vinit;
+
+assign h8 = hdump[3];
+assign v8 = vdump[3];
+assign hf = hdump ^ {9{flip}};
+assign vf = vdump ^ {9{flip}};
 
 // Easy numbers for now
 jtframe_vtimer #(
@@ -82,7 +88,7 @@ jtframe_vtimer #(
     .vdump   ( vdump        ),
     .vrender ( vrender      ),
     .vrender1(              ),
-    .H       ( H            ),
+    .H       ( hdump        ),
     .Hinit   ( Hinit        ),
     .Vinit   ( Vinit        ),
     .LHBL    ( LHBL         ),
@@ -91,14 +97,13 @@ jtframe_vtimer #(
     .VS      ( VS           )
 );
 
-assign h8 = H[3];
-assign v8 = vdump[3];
-
 jtkunio_char u_char(
     .clk         ( clk              ),
     .rst         ( rst              ),
     .pxl_cen     ( pxl_cen          ),
     .flip        ( flip             ),
+    .h           ( hf[7:0]          ),
+    .v           ( vf[7:0]          ),
 
     .cpu_addr    ( cpu_addr         ),
     .ram_cs      ( ram_cs           ),
@@ -117,6 +122,8 @@ jtkunio_scroll u_scroll(
     .rst         ( rst              ),
     .pxl_cen     ( pxl_cen          ),
     .flip        ( flip             ),
+    .h           ( hf               ),
+    .v           ( vf[7:0]          ),
 
     .cpu_addr    ( cpu_addr[10:0]   ),
     .scr_cs      ( scrram_cs        ),
