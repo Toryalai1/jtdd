@@ -81,7 +81,7 @@ assign vf = vdump ^ {9{flip}};
 
 // Easy numbers for now
 jtframe_vtimer #(
-    .HB_START   ( 9'd256    ),
+    .HB_START   ( 9'd258    ),
     .HB_END     ( 9'd16     ),
     .HCNT_END   ( 9'd383    )
 ) u_vtimer (
