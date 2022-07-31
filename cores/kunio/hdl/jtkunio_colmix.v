@@ -52,14 +52,6 @@ assign pal_we     = pal_cs & ~cpu_wrn;
 assign obj_blank  = obj_pxl[2:0]==0 || !gfx_en[3];
 assign char_blank = char_pxl[2:0]==0 || !gfx_en[0];
 
-// wire [3:0] sorted;
-
-// jtframe_sort(
-//     .debug_bus  ( {5'd0, debug_bus[2:0]} ),
-//     .busin      ( {1'b0, scr_pxl[2:0]}   ),
-//     .busout     ( sorted                 )
-// );
-
 always @(posedge clk) begin
     half <= ~half;
     if( pxl_cen ) begin
