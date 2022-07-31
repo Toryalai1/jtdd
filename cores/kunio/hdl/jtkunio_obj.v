@@ -34,17 +34,19 @@ module jtkunio_obj(
     output     [ 5:0]  pxl
 );
 
+localparam A=7;
+
 wire [15:0] scan_dout, vram_dout;
-wire [ 1:0] vram_we = { cpu_addr[10], ~cpu_addr[10] } & {2{objram_cs & ~cpu_wrn}};
+wire [ 1:0] vram_we = { cpu_addr[A], ~cpu_addr[A] } & {2{objram_cs & ~cpu_wrn}};
 reg  [ 9:0] scan_addr;
 
-assign cpu_din = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
+assign cpu_din = cpu_addr[ A] ? vram_dout[15:8] : vram_dout[7:0];
 assign pxl = 0;
 
-jtframe_dual_ram16 #(.aw(10)) u_ram( // 2kB
+jtframe_dual_ram16 #(.aw(7)) u_ram( //
     .clk0   ( clk         ),
     .data0  ({2{cpu_dout}}),
-    .addr0  (cpu_addr[9:0]),
+    .addr0  (cpu_addr[6:0]),
     .we0    ( vram_we     ),
     .q0     ( vram_dout   ),
 
