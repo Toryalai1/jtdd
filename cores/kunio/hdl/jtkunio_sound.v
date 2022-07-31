@@ -55,7 +55,7 @@ wire signed [11:0] pcm_snd;
 wire signed [15:0] fm_snd;
 wire               pcm_sample;
 reg         [ 1:0] pcm_msb;
-reg                pcm_s, ctrl_cs;
+reg                ctrl_cs;
 reg         [ 2:0] pcm_ce;
 reg                cen_oki, last_h8, h8_edge;
 wire               cpu_cen, pcm_cen;
@@ -144,7 +144,7 @@ always @(posedge clk, posedge rst) begin
             nmi_n   <= 1;
             pcm_cnt <= 0;
             pcm_rst <= 0;
-        end else if(pcm_cen) begin
+        end else if(pcm_cen && nmi_n) begin
             pcm_cnt <= pcm_cnt + 1'd1;
             if( &pcm_cnt ) begin
                 nmi_n   <= 0;
