@@ -39,6 +39,7 @@ wire [ 1:0] vram_we = { cpu_addr[10], ~cpu_addr[10] } & {2{objram_cs & ~cpu_wrn}
 reg  [ 9:0] scan_addr;
 
 assign cpu_din = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
+assign pxl = 0;
 
 jtframe_dual_ram16 #(.aw(10)) u_ram( // 2kB
     .clk0   ( clk         ),
