@@ -67,7 +67,7 @@ assign pcm_cs   = nmi_n;
 assign cen_fm   = cen3;
 assign cen_fm2  = cen6;
 
-localparam [7:0] FMGAIN  = 8'h10,
+localparam [7:0] FMGAIN  = 8'h18,
                  PCMGAIN = 8'h10;
 
 jtframe_mixer #(.W0(16),.W1(12)) u_mixer(

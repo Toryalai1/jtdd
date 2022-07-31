@@ -50,7 +50,7 @@ reg  [15:0] plane0;
 reg  [47:0] pxl_data;
 wire        lower;
 
-assign hsum      = { h[8], h } + ( scrpos - { ~flip, 9'd0 });
+assign hsum      = { h[8], h } + ( scrpos - { 1'd0, ~flip, 8'd0 });
 assign cpu_din   = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
 assign scan_addr = { v[7:4], hsum[9:4] };
 assign rom_addr  = { rom_msb, code, v[3:0], 1'b0 }; // 4+8+4+1=17
