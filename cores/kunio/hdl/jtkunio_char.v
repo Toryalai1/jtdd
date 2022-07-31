@@ -49,7 +49,7 @@ assign ram_we    = { cpu_addr[10], ~cpu_addr[10] } & {2{ram_cs & ~cpu_wrn}};
 assign cpu_din   = cpu_addr[10] ? ram_dout[15:8] : ram_dout[7:0];
 assign scan_addr = { v[7:3], h[7:3] };
 assign rom_addr  = { code, v[2:0], 1'b0 }; // 10+3+1 = 14
-assign pxl       = { cur_pal, pxl_data[23], pxl_data[15], pxl_data[7] };
+assign pxl       = { cur_pal, flip ? { pxl_data[16], pxl_data[8], pxl_data[0] } : { pxl_data[23], pxl_data[15], pxl_data[7] } };
 
 always @(posedge clk) if(pxl_cen) begin
     if( h[2:0]==0 ) begin
@@ -62,7 +62,7 @@ always @(posedge clk) if(pxl_cen) begin
             rom_data[2], rom_data[3], rom_data[2+8], rom_data[3+8], rom_data[2+8*2], rom_data[3+8*2], rom_data[2+8*3], rom_data[3+8*3]
         };
     end else begin
-        pxl_data <= pxl_data << 1;
+        pxl_data <= flip ? pxl_data >> 1 : pxl_data << 1;
     end
 end
 
