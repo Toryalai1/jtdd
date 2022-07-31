@@ -31,7 +31,7 @@ module jtkunio_obj(
     output reg [17:0]  rom_addr,
     input      [31:0]  rom_data,
     input              rom_ok,
-    output reg [ 5:0]  pxl
+    output     [ 5:0]  pxl
 );
 
 wire [15:0] scan_dout, vram_dout;

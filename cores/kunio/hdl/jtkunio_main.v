@@ -70,8 +70,8 @@ assign bus_addr = cpu_addr[12:0];
 assign mcu_st   = 0;
 
 always @* begin
-    rom_cs = cpu_addr[15:14] >= 1;
-    ram_cs = 0;
+    rom_cs    = 0;
+    ram_cs    = 0;
     objram_cs = 0;
     scrram_cs = 0;
     flip_cs   = 0;
@@ -82,24 +82,28 @@ always @* begin
     snd_irq   = 0;
     scrpos0_cs= 0;
     scrpos1_cs= 0;
-    case( cpu_addr[13:11] )
-        0,1,2,3: ram_cs = 1; // 8kB in total, the character VRAM is the upper 2kB. Merged in the same chips.
-        4: objram_cs = 1;
-        5: scrram_cs = 1; // 2kB
-        7: begin
-            io_cs = 1;
-            case( cpu_addr[2:0] )
-                0: scrpos0_cs = 1;
-                1: scrpos1_cs = 1;
-                2: snd_irq = 1;
-                3: flip_cs = 1;
-                4: main2mcu_cs = 1;
-                5: bank_cs = 1;
-                6: nmi_clr = 1;
-                7: irq_clr = 1;
-            endcase
-        end
-    endcase
+    if( cpu_addr[15:14]>= 1 ) begin
+        rom_cs = 1;
+    end else begin
+        case( cpu_addr[13:11] )
+            0,1,2,3: ram_cs = 1; // 8kB in total, the character VRAM is the upper 2kB. Merged in the same chips.
+            4: objram_cs = 1;
+            5: scrram_cs = 1; // 2kB
+            7: begin
+                io_cs = 1;
+                case( cpu_addr[2:0] )
+                    0: scrpos0_cs = 1;
+                    1: scrpos1_cs = 1;
+                    2: snd_irq = 1;
+                    3: flip_cs = 1;
+                    4: main2mcu_cs = 1;
+                    5: bank_cs = 1;
+                    6: nmi_clr = 1;
+                    7: irq_clr = 1;
+                endcase
+            end
+        endcase
+    end
 end
 
 always @(posedge clk) begin

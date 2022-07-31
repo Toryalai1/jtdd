@@ -165,11 +165,12 @@ jtframe_rom_1slot #(
 
 // Bank 1: sound
 jtframe_rom_2slots #(
-    .SLOT0_DW   (   8       ),
-    .SLOT0_AW   (  15       ),
+    .SLOT0_DW    (   8        ),
+    .SLOT0_AW    (  15        ),
 
-    .SLOT1_DW   (   8       ),
-    .SLOT1_AW   (  17       )
+    .SLOT1_DW    (   8        ),
+    .SLOT1_AW    (  17        ),
+    .SLOT1_OFFSET( PCM_OFFSET )
 ) u_bank1(
     .rst        ( rst       ),
     .clk        ( clk       ),
@@ -195,11 +196,12 @@ jtframe_rom_2slots #(
 
 // Bank 2: Char & scroll layers
 jtframe_rom_2slots #(
-    .SLOT0_DW   (         32 ), // Char
-    .SLOT0_AW   (         14 ),
+    .SLOT0_DW    (         32 ), // Char
+    .SLOT0_AW    (         14 ),
 
-    .SLOT1_DW   (         32 ), // Scroll
-    .SLOT1_AW   (         17 )
+    .SLOT1_DW    (         32 ), // Scroll
+    .SLOT1_AW    (         17 ),
+    .SLOT1_OFFSET( SCR_OFFSET )
 ) u_bank2(
     .rst        ( rst        ),
     .clk        ( clk        ),
