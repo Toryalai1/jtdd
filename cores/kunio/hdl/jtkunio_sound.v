@@ -20,6 +20,7 @@ module jtkunio_sound(
     input             clk,        // 24 MHz
     input             rst,
     input             cen6,
+    input             cen3,
     input             h8,
     // communication with main CPU
     input             snd_irq,
@@ -63,8 +64,10 @@ wire        [ 3:0] pcm_din;
 assign rom_addr = A[14:0];
 assign pcm_din  = pcm_cnt[0] ? pcm_data[7:4] : pcm_data[3:0];
 assign pcm_cs   = nmi_n;
+assign cen_fm   = cen3;
+assign cen_fm2  = cen6;
 
-localparam [7:0] FMGAIN  = 8'h08,
+localparam [7:0] FMGAIN  = 8'h10,
                  PCMGAIN = 8'h10;
 
 jtframe_mixer #(.W0(16),.W1(12)) u_mixer(
@@ -192,14 +195,6 @@ jtframe_sys6809 #(.RAM_AW(12)) u_cpu(
     .ram_dout   ( ram_dout  ),
     .cpu_dout   ( cpu_dout  ),
     .cpu_din    ( cpu_din   )
-);
-
-jtframe_frac_cen u_fmcen(
-    .clk        (  clk                ), // 24 MHz
-    .n          ( 10'd105             ),
-    .m          ( 10'd704             ),
-    .cen        ( { cen_fm2, cen_fm } ),
-    .cenb       (                     )
 );
 
 jtopl2 u_opl(

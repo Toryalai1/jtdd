@@ -61,13 +61,14 @@ reg  [ 7:0] cpu_din, cab_dout;
 reg         bank, bank_cs, io_cs, flip_cs,
             scrpos0_cs, scrpos1_cs,
             irq_clr, nmi_clr, main2mcu_cs;
-wire        rdy, irqn;
+wire        rdy, irqn, nmi_n;
 wire [ 1:0] mcu_st;
 
 assign rom_addr = { cpu_addr[15], cpu_addr[15] ? cpu_addr[14] : bank, cpu_addr[13:0] };
 assign rdy      = ~rom_cs | rom_ok;
 assign bus_addr = cpu_addr[12:0];
 assign mcu_st   = 0;
+assign nmi_n    = LVBL & dip_pause;
 
 always @* begin
     rom_cs      = 0;
@@ -95,12 +96,12 @@ always @* begin
             7: begin
                 io_cs = 1;
                 case( cpu_addr[2:0] )
-                    0: scrpos0_cs = 1;
-                    1: scrpos1_cs = 1;
-                    2: snd_irq = 1;
-                    3: flip_cs = 1;
+                    0: scrpos0_cs = !cpu_rnw;
+                    1: scrpos1_cs = !cpu_rnw;
+                    2: snd_irq = !cpu_rnw;
+                    3: flip_cs = !cpu_rnw;
                     4: main2mcu_cs = 1;
-                    5: bank_cs = 1;
+                    5: bank_cs = !cpu_rnw;
                     6: nmi_clr = 1;
                     7: irq_clr = 1;
                 endcase
@@ -111,8 +112,8 @@ end
 
 always @(posedge clk) begin
     case( cpu_addr[1:0] )
-        0: cab_dout <= { start, joystick1[5:0] };
-        1: cab_dout <= { coin,  joystick2[5:0] };
+        0: cab_dout <= { start, joystick1[5:4], joystick1[2], joystick1[3], joystick1[1:0] };
+        1: cab_dout <= { coin,  joystick2[5:4], joystick2[2], joystick2[3], joystick2[1:0] };
         2: cab_dout <= { service, ~LVBL, mcu_st,
                         joystick2[6], joystick1[6], dipsw_b[1:0] };
         3: cab_dout <= dipsw_a;
@@ -163,7 +164,7 @@ T65 u_cpu(
     .Rdy    ( rdy       ),
     .Abort_n( 1'b1      ),
     .IRQ_n  ( irqn      ),
-    .NMI_n  ( LVBL      ),
+    .NMI_n  ( nmi_n     ),
     .SO_n   ( 1'b1      ),
     .R_W_n  ( cpu_rnw   ),
     .Sync   (           ),

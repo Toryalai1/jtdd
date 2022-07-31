@@ -35,7 +35,8 @@ module jtkunio_scroll(
     output     [16:0]  rom_addr,
     input      [31:0]  rom_data,
     input              rom_ok,
-    output     [ 5:0]  pxl
+    output     [ 5:0]  pxl,
+    input      [ 7:0]  debug_bus
 );
 
 wire [15:0] scan_dout, vram_dout;
@@ -49,7 +50,7 @@ reg  [15:0] plane0;
 reg  [47:0] pxl_data;
 wire        lower;
 
-assign hsum      = scrpos + { h[8], h };
+assign hsum      = { h[8], h } + ( scrpos - 10'h100);
 assign cpu_din   = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
 assign scan_addr = { v[7:4], hsum[9:4] };
 assign rom_addr  = { rom_msb, code, v[3:0], 1'b0 }; // 4+8+4+1=17

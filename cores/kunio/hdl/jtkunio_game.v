@@ -87,7 +87,7 @@ module jtkunio_game(
     // Debug
     input   [3:0]   gfx_en,
     input   [7:0]   debug_bus,
-    output  [7:0]   debug_view
+    output reg [7:0] debug_view
 );
 
 // clock enable signals
@@ -127,8 +127,15 @@ assign pxl_cen    = cen48[1];
 assign ba_wr      = 0;
 assign ba0_din    = 0;
 assign ba0_din_m  = 0;
-assign debug_view = 0;
 assign dip_flip   = flip;
+
+always @* begin
+    case( debug_bus[1:0] )
+        0: debug_view = scrpos[9:2];
+        1: debug_view = { 6'd0, scrpos[1:0] };
+        default: debug_view=0;
+    endcase
+end
 
 // The CPUs/sound use the 24 MHz clock
 jtframe_frac_cen #( .W( 4), .WC( 2)) u_cen24(
@@ -213,6 +220,7 @@ jtkunio_sound u_sound(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
     .cen6       ( cen_6         ),
+    .cen3       ( cen_3         ),
     .h8         ( h8            ),
 
     .snd_latch  ( snd_latch     ),
@@ -288,7 +296,8 @@ jtkunio_video u_video(
     .red        ( red           ),
     .green      ( green         ),
     .blue       ( blue          ),
-    .gfx_en     ( gfx_en        )
+    .gfx_en     ( gfx_en        ),
+    .debug_bus  ( debug_bus     )
 );
 
 jtkunio_sdram u_sdram(

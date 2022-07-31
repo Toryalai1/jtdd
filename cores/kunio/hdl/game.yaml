@@ -23,6 +23,7 @@ jtframe:
       - jtframe_6801mcu.v
   - get:
       - jtframe_ff.v
+      - jtframe_sort.v
   - from: ram
     get:
       - jtframe_ram.v

@@ -62,6 +62,7 @@ module jtkunio_video(
     output     [3:0]   green,
     output     [3:0]   blue,
     // Debug
+    input      [7:0]   debug_bus,
     input      [3:0]   gfx_en
 );
 
@@ -80,8 +81,9 @@ assign vf = vdump ^ {9{flip}};
 
 // Easy numbers for now
 jtframe_vtimer #(
-    .HB_START   ( 9'd255    ),
-    .HB_END     ( 9'd383    )
+    .HB_START   ( 9'd255+9'd8 ),
+    .HB_END     ( 9'd16     ),
+    .HCNT_END   ( 9'd383    )
 ) u_vtimer (
     .clk     ( clk          ),
     .pxl_cen ( pxl_cen      ),
@@ -135,7 +137,8 @@ jtkunio_scroll u_scroll(
     .rom_addr    ( scr_addr         ),
     .rom_data    ( scr_data         ),
     .rom_ok      ( scr_ok           ),
-    .pxl         ( scr_pxl          )
+    .pxl         ( scr_pxl          ),
+    .debug_bus   ( debug_bus        )
 );
 
 jtkunio_obj u_obj(
@@ -178,7 +181,8 @@ jtkunio_colmix u_colmix(
     .red         ( red              ),
     .green       ( green            ),
     .blue        ( blue             ),
-    .gfx_en      ( gfx_en           )
+    .gfx_en      ( gfx_en           ),
+    .debug_bus   ( debug_bus        )
 );
 
 endmodule
