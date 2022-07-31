@@ -38,32 +38,31 @@ module jtkunio_char(
 );
 
 wire [15:0] scan_dout, ram_dout;
-wire [ 1:0] ram_we = { cpu_addr[0], ~cpu_addr[0] } & {2{ram_cs & ~cpu_wrn}};
+wire [ 1:0] ram_we;
 reg  [ 9:0] code;
 wire [ 9:0] scan_addr;
 reg  [23:0] pxl_data;
 reg  [ 1:0] pal, cur_pal;
+wire [11:0] shf_addr = { cpu_addr[12:11], cpu_addr[9:0] };
 
-assign cpu_din   = cpu_addr[0] ? ram_dout[15:8] : ram_dout[7:0];
+assign ram_we    = { cpu_addr[10], ~cpu_addr[10] } & {2{ram_cs & ~cpu_wrn}};
+assign cpu_din   = cpu_addr[10] ? ram_dout[15:8] : ram_dout[7:0];
 assign scan_addr = { v[7:3], h[7:3] };
 assign rom_addr  = { code, v[2:0], 1'b0 }; // 10+3+1 = 14
-assign pxl       = { cur_pal, pxl_data[12], pxl_data[6], pxl_data[0] };
-
-function [5:0] swap_bits( input [7:0] a);
-    swap_bits = { a[6], a[7], a[4], a[5], a[2], a[3] };
-endfunction
+assign pxl       = { cur_pal, pxl_data[23], pxl_data[15], pxl_data[7] };
 
 always @(posedge clk) if(pxl_cen) begin
     if( h[2:0]==0 ) begin
         code <= scan_dout[9:0];
         pal  <= scan_dout[15:14];
         cur_pal <= pal;
-        pxl_data <= {swap_bits(rom_data[31:24]),
-                     swap_bits(rom_data[23:16]),
-                     swap_bits(rom_data[15: 8]),
-                     swap_bits(rom_data[ 7: 0])};
+        pxl_data <= {
+            rom_data[7], rom_data[6], rom_data[7+8], rom_data[6+8], rom_data[7+8*2], rom_data[6+8*2], rom_data[7+8*3], rom_data[6+8*3],
+            rom_data[5], rom_data[4], rom_data[5+8], rom_data[4+8], rom_data[5+8*2], rom_data[4+8*2], rom_data[5+8*3], rom_data[4+8*3],
+            rom_data[3], rom_data[2], rom_data[3+8], rom_data[2+8], rom_data[3+8*2], rom_data[2+8*2], rom_data[3+8*3], rom_data[2+8*3]
+        };
     end else begin
-        pxl_data <= pxl_data >> 1;
+        pxl_data <= pxl_data << 1;
     end
 end
 
@@ -74,7 +73,7 @@ jtframe_dual_ram16 #(
 ) u_ram( // 2kB
     .clk0   ( clk           ),
     .data0  ({2{cpu_dout}}  ),
-    .addr0  (cpu_addr[12:1] ),
+    .addr0  ( shf_addr      ),
     .we0    ( ram_we        ),
     .q0     ( ram_dout      ),
 

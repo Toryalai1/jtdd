@@ -114,7 +114,7 @@ always @* begin
     post_addr = ioctl_addr;
     // moves the H address bit to the LSBs
     if( is_char )
-        post_addr[3:0] = { ioctl_addr[2:0], ioctl_addr[3] };
+        post_addr[4:0] = { ioctl_addr[2:0], ioctl_addr[4:3] };
     if( is_scr | is_obj )
         post_addr[5:0] = { ioctl_addr[3:0], ioctl_addr[5:4] };
 end
