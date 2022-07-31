@@ -150,8 +150,8 @@ jtframe_frac_cen #( .W( 2), .WC( 4)) u_cen48(
 
 `ifndef NOMAIN
 jtkunio_main u_main(
-    .rst         ( rst          ),
-    .clk         ( clk          ),
+    .rst         ( rst24        ),
+    .clk         ( clk24        ),
     .cen_1p5     ( cen_1p5      ),
     .LVBL        ( LVBL         ),
     .v8          ( v8           ),
