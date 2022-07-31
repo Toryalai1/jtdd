@@ -64,7 +64,7 @@ reg         bank, bank_cs, io_cs, flip_cs,
 wire        rdy, irqn;
 wire [ 1:0] mcu_st;
 
-assign rom_addr = { ~cpu_addr[15], cpu_addr[15] ? cpu_addr[14] : bank, cpu_addr[13:0] };
+assign rom_addr = { cpu_addr[15], cpu_addr[15] ? cpu_addr[14] : bank, cpu_addr[13:0] };
 assign rdy      = ~rom_cs | rom_ok;
 assign bus_addr = cpu_addr[12:0];
 assign mcu_st   = 0;

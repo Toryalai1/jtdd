@@ -104,7 +104,7 @@ wire        is_char, is_scr, is_obj, prom_we;
 reg  [24:0] post_addr;
 wire        gfx_cs;
 
-assign gfx_cs     = ~vs & ~hs;
+assign gfx_cs     = ~vs & ~hs & ~downloading;
 assign dwnld_busy = downloading;
 assign is_char    = prog_ba==2 && ioctl_addr[19:0]<SCR_START[19:0];
 assign is_scr     = prog_ba==2 && !is_char;

@@ -57,7 +57,9 @@ module mist_dump(
             $shm_probe(UUT.u_game.u_main,"A");
             $shm_probe(UUT.u_game.u_sdram,"A");
             $shm_probe(UUT.u_game.u_sdram.u_dwnld,"A");
-            // $shm_probe(UUT.u_game.u_sound,"A");
+            `ifndef NOSOUND
+                $shm_probe(UUT.u_game.u_sound,"A");
+            `endif
             // $shm_probe(UUT.u_game.u_video,"A");
         `endif
     end

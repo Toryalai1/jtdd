@@ -36,4 +36,5 @@ if [ ! -e rom.bin ]; then
     ln -s $ROM/renegdeb.rom rom.bin || exit $?
 fi
 
-jtsim -mist -sysname kunio $OTHER
+jtsim -mist -sysname kunio -d JTFRAME_SIM_ROMRQ_NOCHECK \
+    $OTHER

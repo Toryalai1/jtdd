@@ -209,7 +209,7 @@ jtkunio_main u_main(
 `endif
 
 `ifndef NOSOUND
-jtkunio_sound u_snd(
+jtkunio_sound u_sound(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
     .cen6       ( cen_6         ),
