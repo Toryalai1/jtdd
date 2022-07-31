@@ -124,7 +124,7 @@ jtkunio_scroll u_scroll(
     .rst         ( rst              ),
     .pxl_cen     ( pxl_cen          ),
     .flip        ( flip             ),
-    .h           ( hf               ),
+    .h           ( hdump            ), // unflipped version
     .v           ( vf[7:0]          ),
 
     .cpu_addr    ( cpu_addr[10:0]   ),

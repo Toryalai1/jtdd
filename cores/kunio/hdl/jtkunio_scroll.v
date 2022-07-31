@@ -39,10 +39,13 @@ module jtkunio_scroll(
     input      [ 7:0]  debug_bus
 );
 
+localparam [8:0] HOFFSET = 9'd16;
+
 wire [15:0] scan_dout, vram_dout;
 wire [ 1:0] vram_we = { cpu_addr[10], ~cpu_addr[10] } & {2{scr_cs & ~cpu_wrn}};
 wire [ 9:0] scan_addr;
 wire [ 9:0] hsum;
+reg  [ 8:0] hadv;
 reg  [ 3:0] rom_msb;
 reg  [ 2:0] code_msb, cur_pal, pal;
 reg  [ 7:0] code;
@@ -50,12 +53,19 @@ reg  [15:0] plane0;
 reg  [47:0] pxl_data;
 wire        lower;
 
-assign hsum      = { h[8], h } + ( scrpos - { 1'd0, ~flip, 8'd0 });
+assign hsum      = { hadv[8], hadv } + ( scrpos - { 1'd0, ~flip, 8'd0 });
 assign cpu_din   = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
 assign scan_addr = { v[7:4], hsum[9:4] };
 assign rom_addr  = { rom_msb, code, v[3:0], 1'b0 }; // 4+8+4+1=17
 assign pxl       = { cur_pal, flip ? {pxl_data[47], pxl_data[31], pxl_data[15] } : {pxl_data[32], pxl_data[16], pxl_data[0]} };
 assign lower     = code_msb[1:0]==0;
+
+always @* begin
+    hadv = h + HOFFSET; //debug_bus;
+    if( hadv>383 )
+        hadv = hadv - 9'd384;
+    hadv = hadv ^ {9{flip}};
+end
 
 always @* begin
     case( {hsum[3], code_msb} )
