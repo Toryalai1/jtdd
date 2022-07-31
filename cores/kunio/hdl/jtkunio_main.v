@@ -70,18 +70,20 @@ assign bus_addr = cpu_addr[12:0];
 assign mcu_st   = 0;
 
 always @* begin
-    rom_cs    = 0;
-    ram_cs    = 0;
-    objram_cs = 0;
-    scrram_cs = 0;
-    flip_cs   = 0;
-    io_cs     = 0;
-    irq_clr   = 0;
-    nmi_clr   = 0;
-    bank_cs   = 0;
-    snd_irq   = 0;
-    scrpos0_cs= 0;
-    scrpos1_cs= 0;
+    rom_cs      = 0;
+    ram_cs      = 0;
+    objram_cs   = 0;
+    scrram_cs   = 0;
+    pal_cs      = 0;
+    flip_cs     = 0;
+    io_cs       = 0;
+    irq_clr     = 0;
+    nmi_clr     = 0;
+    bank_cs     = 0;
+    snd_irq     = 0;
+    scrpos0_cs  = 0;
+    scrpos1_cs  = 0;
+    main2mcu_cs = 0;
     if( cpu_addr[15:14]>= 1 ) begin
         rom_cs = 1;
     end else begin
@@ -89,6 +91,7 @@ always @* begin
             0,1,2,3: ram_cs = 1; // 8kB in total, the character VRAM is the upper 2kB. Merged in the same chips.
             4: objram_cs = 1;
             5: scrram_cs = 1; // 2kB
+            6: pal_cs = 1;
             7: begin
                 io_cs = 1;
                 case( cpu_addr[2:0] )
