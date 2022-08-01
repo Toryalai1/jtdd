@@ -45,7 +45,8 @@ wire [ 7:0] scan_dout, scan_addr;
 reg  [ 5:0] obj_cnt;
 wire [ 4:0] buf_din;
 reg         cen = 0;
-reg  [ 7:0] x, y, ydiff, buf_addr;
+reg  [ 7:0] x, y, ydiff;
+reg  [ 8:0] buf_addr;
 reg  [ 1:0] dr_pal, pal;
 reg  [ 2:0] st;
 reg         tall, dr_hflip, hflip, done, dr_busy,
@@ -66,7 +67,7 @@ assign rom_good  = rom_okl & rom_ok;
 
 always @* begin
     ydiff  = vrender + y;
-    inzone = ydiff[7:5] == 0 && (!tall || !ydiff[4]);
+    inzone = &ydiff[7:5] && (tall || ydiff[4]);
 end
 
 always @(posedge clk) begin
@@ -94,14 +95,14 @@ always @(posedge clk, posedge rst) begin
                 2: code[7:0] <= scan_dout;
                 3: begin
                     x <= scan_dout;
-                    if( tall && y[4] ) code[0] <= 1;
+                    if( tall && ydiff[4] ) code[0] <= 1;
                 end
-                4: if( inzone && !dr_busy ) begin
+                4: if( inzone && dr_busy ) begin
+                    st <= 4;
+                end else begin
                     dr_start <= inzone;
                     obj_cnt  <= obj_cnt + 1'd1;
                     done     <= &obj_cnt;
-                end else begin
-                    st <= 4;
                 end
             endcase
         end
@@ -111,7 +112,7 @@ end
 assign buf_din = { dr_pal, dr_hflip ?
     {pxl_data[47], pxl_data[31], pxl_data[15] } :
     {pxl_data[32], pxl_data[16], pxl_data[0]} };
-assign buf_we = dr_busy & ~rom_cs;
+assign buf_we = dr_busy & ~rom_cs & ~buf_addr[8];
 
 always @(posedge clk) begin
     rom_okl <= rom_ok;
@@ -137,12 +138,12 @@ always @(posedge clk) begin
             pxl_cnt   <= pxl_cnt + 4'd1;
             dr_busy   <= ~&pxl_cnt;
             pxl_data  <= dr_hflip ? pxl_data<<1 : pxl_data>>1;
-            buf_addr <= buf_addr + 8'd1;
+            buf_addr <= buf_addr + 1'd1;
         end
     end
     if( dr_start && cen ) begin
         dr_busy   <= 1;
-        buf_addr <= x;
+        buf_addr  <= { 1'd0, x } + 9'd8;
         dr_pal    <= pal;
         dr_hflip  <= hflip;
         dr_code   <= code;
@@ -201,7 +202,7 @@ always @* begin
     endcase
 end
 
-jtframe_dual_ram #(.aw(8)) u_ram(
+jtframe_dual_ram #(.aw(8),.simfile("obj.bin")) u_ram(
     .clk0   ( clk         ),
     .data0  ( cpu_dout    ),
     .addr0  ( cpu_addr    ),
@@ -217,7 +218,7 @@ jtframe_dual_ram #(.aw(8)) u_ram(
 
 jtframe_obj_buffer #(
     .DW     ( 5     ),
-    .AW     ( 8     ),
+    .AW     ( 9     ),
     .ALPHAW ( 3     ),
     .ALPHA  ( 32'd0 )
 ) u_buffer(
@@ -229,7 +230,7 @@ jtframe_obj_buffer #(
     .wr_addr( buf_addr  ),
     .we     ( buf_we    ),
     // Old data reads (and erases)
-    .rd_addr( hdump[7:0]),
+    .rd_addr( hdump     ),
     .rd     ( pxl_cen   ),
     .rd_data( pxl       )
 );

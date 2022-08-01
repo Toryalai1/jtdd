@@ -29,6 +29,7 @@ if [ -n "$SCENE" ]; then
     done
     dd if=$SCENE/scr.bin of=scr_lo.bin count=2
     dd if=$SCENE/scr.bin of=scr_hi.bin count=2 skip=2
+    dd if=$SCENE/obj.bin of=obj.bin count=1
     cp $SCENE/pal.bin .
 fi
 
