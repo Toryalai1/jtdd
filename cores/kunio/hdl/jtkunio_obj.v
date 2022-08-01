@@ -143,7 +143,7 @@ always @(posedge clk) begin
     end
     if( dr_start && cen ) begin
         dr_busy   <= 1;
-        buf_addr  <= { 1'd0, x } + 9'd8;
+        buf_addr  <= { 1'd0, x } + 9'd9;
         dr_pal    <= pal;
         dr_hflip  <= hflip;
         dr_code   <= code;

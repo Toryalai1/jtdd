@@ -31,7 +31,7 @@ module jtkunio_sound(
     input      [ 7:0] rom_data,
     input             rom_ok,
 
-    output reg [16:0] pcm_addr,
+    output     [16:0] pcm_addr,
     output            pcm_cs,
     input      [ 7:0] pcm_data,
     input             pcm_ok,
@@ -54,7 +54,7 @@ wire               cen_fm, cen_fm2;
 wire signed [11:0] pcm_snd, pcm_raw;
 wire signed [15:0] fm_snd;
 wire               pcm_sample;
-reg         [ 1:0] pcm_msb;
+reg         [ 1:0] pcm_msb, pcm_enc;
 reg                ctrl_cs;
 reg         [ 2:0] pcm_ce;
 reg                cen_oki, last_h8, h8_edge;
@@ -66,6 +66,8 @@ assign pcm_din  = ~pcm_cnt[0] ? pcm_data[7:4] : pcm_data[3:0];
 assign pcm_cs   = nmi_n;
 assign cen_fm   = cen3;
 assign cen_fm2  = cen6;
+assign pcm_addr = { ~pcm_ce[2] ? 2'd2 : ~pcm_ce[1] ? 2'd1 : 2'd0,
+                    pcm_msb, pcm_cnt[13:1] };
 
 localparam [7:0] FMGAIN  = 8'h18,
                  PCMGAIN = 8'h10;
@@ -113,16 +115,6 @@ always @(*) begin
               latch_cs ? snd_latch :
               fm_cs    ? fm_dout   :
               8'hff;
-end
-
-always @(*) begin
-    pcm_addr[14:0] = { pcm_msb, pcm_cnt[13:1] };
-    case( pcm_ce )
-        1: pcm_addr[16:15]=0;
-        2: pcm_addr[16:15]=1;
-        4: pcm_addr[16:15]=2;
-        default: pcm_addr[16:15]=0;
-    endcase
 end
 
 always @(posedge clk, posedge rst) begin
