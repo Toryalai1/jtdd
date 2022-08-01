@@ -36,7 +36,8 @@ module jtkunio_obj(
     output     [17:0]  rom_addr,
     input      [31:0]  rom_data,
     input              rom_ok,
-    output     [ 4:0]  pxl
+    output     [ 4:0]  pxl,
+    input      [ 7:0]  debug_bus
 );
 
 
@@ -50,7 +51,7 @@ reg  [ 8:0] buf_addr;
 reg  [ 1:0] dr_pal, pal;
 reg  [ 2:0] st;
 reg         tall, dr_hflip, hflip, done, dr_busy,
-            rom_okl, half, inzone, dr_start;
+            half, inzone, dr_start;
 reg  [11:0] code;
 reg  [11:0] dr_code;
 reg  [ 4:0] rom_msb;
@@ -58,12 +59,11 @@ reg  [ 3:0] dr_ysub, pxl_cnt;
 
 reg  [47:0] pxl_data;
 reg  [15:0] plane0;
-wire        rom_good, buf_we;
+wire        buf_we;
 
 assign scan_addr = { obj_cnt, st[1:0] };
 assign vram_we   = objram_cs & ~cpu_wrn;
 assign rom_addr  = { rom_msb, dr_code[7:0], dr_ysub, 1'd0 }; // 5+8+4+1=18
-assign rom_good  = rom_okl & rom_ok;
 
 always @* begin
     ydiff  = vrender + y;
@@ -87,7 +87,7 @@ always @(posedge clk, posedge rst) begin
             done     <= 0;
             dr_start <= 0;
         end else if( cen && !done ) begin
-            st <= st==4 ? 3'd0 : st+3'd1;
+            if( st != 4 ) st <= st+3'd1;
             dr_start <= 0;
             case( st )
                 0: y <= scan_dout;
@@ -97,9 +97,8 @@ always @(posedge clk, posedge rst) begin
                     x <= scan_dout;
                     if( tall && ydiff[4] ) code[0] <= 1;
                 end
-                4: if( inzone && dr_busy ) begin
-                    st <= 4;
-                end else begin
+                4: if( !inzone || !dr_busy ) begin
+                    st <= 0;
                     dr_start <= inzone;
                     obj_cnt  <= obj_cnt + 1'd1;
                     done     <= &obj_cnt;
@@ -115,23 +114,21 @@ assign buf_din = { dr_pal, dr_hflip ?
 assign buf_we = dr_busy & ~rom_cs;
 
 always @(posedge clk) begin
-    rom_okl <= rom_ok;
     if( dr_busy ) begin
         if( rom_cs ) begin
+            pxl_cnt <= 0;
             if( rom_ok && cen ) begin
                 if( !half ) begin
                     plane0 <= dr_code[8] ?
                         { rom_data[31:28], rom_data[23:20], rom_data[15:12], rom_data[7:4] } :
                         { rom_data[27:24], rom_data[19:16], rom_data[11: 8], rom_data[3:0] };
                     half <= 1;
-                    rom_okl <= 0;
                 end else begin
                     pxl_data <= { plane0,
                         { rom_data[31:28], rom_data[23:20], rom_data[15:12], rom_data[7:4] }, // plane 1
                         { rom_data[27:24], rom_data[19:16], rom_data[11: 8], rom_data[3:0] }  // plane 2
                     };
                     rom_cs  <= 0;
-                    pxl_cnt <= 0;
                 end
             end
         end else begin
@@ -148,7 +145,6 @@ always @(posedge clk) begin
         dr_hflip  <= hflip;
         dr_code   <= code;
         dr_ysub   <= ydiff[3:0];
-        rom_okl   <= 0;
         rom_cs    <= 1;
         half      <= 0;
     end
@@ -227,7 +223,7 @@ jtframe_obj_buffer #(
     .flip   ( flip      ),
     // New data writes
     .wr_data( buf_din   ),
-    .wr_addr( buf_addr  ),
+    .wr_addr( {1'b0,buf_addr[7:0]}  ),
     .we     ( buf_we    ),
     // Old data reads (and erases)
     .rd_addr( hdump     ),

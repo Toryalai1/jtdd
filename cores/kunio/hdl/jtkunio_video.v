@@ -165,7 +165,8 @@ jtkunio_obj u_obj(
     .rom_data    ( obj_data         ),
     .rom_cs      ( obj_cs           ),
     .rom_ok      ( obj_ok           ),
-    .pxl         ( obj_pxl          )
+    .pxl         ( obj_pxl          ),
+    .debug_bus   ( debug_bus        )
 );
 
 jtkunio_colmix u_colmix(
