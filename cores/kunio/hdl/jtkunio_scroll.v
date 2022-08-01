@@ -51,14 +51,13 @@ reg  [ 2:0] code_msb, cur_pal, pal;
 reg  [ 7:0] code;
 reg  [15:0] plane0;
 reg  [47:0] pxl_data;
-wire        lower;
+reg         lower;
 
 assign hsum      = { hadv[8], hadv } + ( scrpos - { 1'd0, ~flip, 8'd0 });
 assign cpu_din   = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
 assign scan_addr = { v[7:4], hsum[9:4] };
 assign rom_addr  = { rom_msb, code, v[3:0], 1'b0 }; // 4+8+4+1=17
 assign pxl       = { cur_pal, flip ? {pxl_data[47], pxl_data[31], pxl_data[15] } : {pxl_data[32], pxl_data[16], pxl_data[0]} };
-assign lower     = code_msb[1:0]==0;
 
 always @* begin
     hadv = h + HOFFSET; //debug_bus;
@@ -69,25 +68,25 @@ end
 
 always @* begin
     case( {hsum[3], code_msb} )
-        4'o00: rom_msb = 0;
-        4'o10: rom_msb = 2;
-        4'o01: rom_msb = 0;
-        4'o11: rom_msb = 3;
+        4'o00: { lower, rom_msb } = { 0, 4'd0  };
+        4'o10: { lower, rom_msb } = { 0, 4'd2  };
+        4'o01: { lower, rom_msb } = { 1, 4'd0  };
+        4'o11: { lower, rom_msb } = { 1, 4'd3  };
 
-        4'o02: rom_msb = 1;
-        4'o12: rom_msb = 4;
-        4'o03: rom_msb = 1;
-        4'o13: rom_msb = 5;
+        4'o02: { lower, rom_msb } = { 0, 4'd1  };
+        4'o12: { lower, rom_msb } = { 0, 4'd4  };
+        4'o03: { lower, rom_msb } = { 1, 4'd1  };
+        4'o13: { lower, rom_msb } = { 1, 4'd5  };
 
-        4'o04: rom_msb = 6;
-        4'o14: rom_msb = 8;
-        4'o05: rom_msb = 6;
-        4'o15: rom_msb = 9;
+        4'o04: { lower, rom_msb } = { 1, 4'd6  };
+        4'o14: { lower, rom_msb } = { 1, 4'd8  };
+        4'o05: { lower, rom_msb } = { 0, 4'd6  };
+        4'o15: { lower, rom_msb } = { 0, 4'd9  };
 
-        4'o06: rom_msb = 7;
-        4'o16: rom_msb = 10;
-        4'o07: rom_msb = 7;
-        4'o17: rom_msb = 11;
+        4'o06: { lower, rom_msb } = { 1, 4'd7  };
+        4'o16: { lower, rom_msb } = { 1, 4'd10 };
+        4'o07: { lower, rom_msb } = { 0, 4'd7  };
+        4'o17: { lower, rom_msb } = { 0, 4'd11 };
     endcase
 end
 

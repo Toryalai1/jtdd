@@ -20,7 +20,7 @@ module jtkunio_obj(
     input              rst,
     input              clk,
     input              pxl_cen,
-    input      [10:0]  cpu_addr,
+    input      [ 7:0]  cpu_addr,
     input              objram_cs,
     input              cpu_wrn,
     input      [ 7:0]  cpu_dout,
@@ -34,26 +34,24 @@ module jtkunio_obj(
     output     [ 5:0]  pxl
 );
 
-localparam A=7;
 
 wire [15:0] scan_dout, vram_dout;
-wire [ 1:0] vram_we = { cpu_addr[A], ~cpu_addr[A] } & {2{objram_cs & ~cpu_wrn}};
+wire        vram_we = objram_cs & ~cpu_wrn;
 reg  [ 9:0] scan_addr;
 
-assign cpu_din = cpu_addr[ A] ? vram_dout[15:8] : vram_dout[7:0];
 assign pxl = 0;
 
-jtframe_dual_ram16 #(.aw(7)) u_ram( //
+jtframe_dual_ram #(.aw(8)) u_ram( //
     .clk0   ( clk         ),
-    .data0  ({2{cpu_dout}}),
-    .addr0  (cpu_addr[6:0]),
+    .data0  ( cpu_dout    ),
+    .addr0  ( cpu_addr    ),
     .we0    ( vram_we     ),
-    .q0     ( vram_dout   ),
+    .q0     ( cpu_din     ),
 
     .clk1   ( clk         ),
-    .data1  ( 16'd0       ),
+    .data1  ( 8'd0        ),
     .addr1  ( scan_addr   ),
-    .we1    ( 2'b0        ),
+    .we1    ( 1'b0        ),
     .q1     ( scan_dout   )
 );
 
