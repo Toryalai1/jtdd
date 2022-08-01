@@ -51,7 +51,6 @@ reg  [ 2:0] code_msb, cur_pal, pal;
 reg  [ 7:0] code;
 reg  [15:0] plane0;
 reg  [47:0] pxl_data;
-reg         lower;
 
 assign hsum      = { hadv[8], hadv } + ( scrpos - { 1'd0, ~flip, 8'd0 });
 assign cpu_din   = cpu_addr[10] ? vram_dout[15:8] : vram_dout[7:0];
@@ -68,33 +67,33 @@ end
 
 always @* begin
     case( {hsum[3], code_msb} )
-        4'o00: { lower, rom_msb } = { 0, 4'd0  };
-        4'o10: { lower, rom_msb } = { 0, 4'd2  };
-        4'o01: { lower, rom_msb } = { 1, 4'd0  };
-        4'o11: { lower, rom_msb } = { 1, 4'd3  };
+        4'o00: rom_msb = 4'd0;
+        4'o10: rom_msb = 4'd2;
+        4'o01: rom_msb = 4'd0;
+        4'o11: rom_msb = 4'd3;
 
-        4'o02: { lower, rom_msb } = { 0, 4'd1  };
-        4'o12: { lower, rom_msb } = { 0, 4'd4  };
-        4'o03: { lower, rom_msb } = { 1, 4'd1  };
-        4'o13: { lower, rom_msb } = { 1, 4'd5  };
+        4'o02: rom_msb = 4'd1;
+        4'o12: rom_msb = 4'd4;
+        4'o03: rom_msb = 4'd1;
+        4'o13: rom_msb = 4'd5;
 
-        4'o04: { lower, rom_msb } = { 1, 4'd6  };
-        4'o14: { lower, rom_msb } = { 1, 4'd8  };
-        4'o05: { lower, rom_msb } = { 0, 4'd6  };
-        4'o15: { lower, rom_msb } = { 0, 4'd9  };
+        4'o04: rom_msb = 4'd6;
+        4'o14: rom_msb = 4'd8;
+        4'o05: rom_msb = 4'd6;
+        4'o15: rom_msb = 4'd9;
 
-        4'o06: { lower, rom_msb } = { 1, 4'd7  };
-        4'o16: { lower, rom_msb } = { 1, 4'd10 };
-        4'o07: { lower, rom_msb } = { 0, 4'd7  };
-        4'o17: { lower, rom_msb } = { 0, 4'd11 };
+        4'o06: rom_msb = 4'd7;
+        4'o16: rom_msb = 4'd10;
+        4'o07: rom_msb = 4'd7;
+        4'o17: rom_msb = 4'd11;
     endcase
 end
 
 always @(posedge clk) if(pxl_cen) begin
     if( hsum[2:0]==7 ) begin
         if( !hsum[3] )
-            plane0 <= lower ? { rom_data[27:24], rom_data[19:16], rom_data[11: 8], rom_data[3:0] } :
-                              { rom_data[31:28], rom_data[23:20], rom_data[15:12], rom_data[7:4] };
+            plane0 <= code_msb[0] ? { rom_data[31:28], rom_data[23:20], rom_data[15:12], rom_data[7:4] } :
+                                    { rom_data[27:24], rom_data[19:16], rom_data[11: 8], rom_data[3:0] };
         else begin
             pal     <= scan_dout[15:13];
             cur_pal <= pal;
