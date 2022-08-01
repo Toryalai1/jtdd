@@ -81,7 +81,6 @@
         <dip name="Lives" bits="4" ids="2,1"/>
         <dip name="Bonus Life" bits="5" ids="None,30k"/>
         <dip name="Cabinet" bits="6" ids="Upright,Cocktail"/>
-        <dip name="Flip Screen" bits="7" ids="On,Off"/>
         <!-- DSW2 -->
         <dip name="Difficulty" bits="8,9" ids="Very Hard,Hard,Easy,Normal"/>
     </switches>

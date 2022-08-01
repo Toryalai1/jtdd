@@ -23,7 +23,8 @@ Names = [
 name="jtkunio"
 
 [dipsw]
-delete = [ "Unused", "Unknown" ]
+# Flip screen not supported
+delete = [ "Unused", "Unknown", "Flip Screen" ]
 bitcnt = 16
 
 
