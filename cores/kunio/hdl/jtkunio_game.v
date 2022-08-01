@@ -129,13 +129,14 @@ assign ba0_din    = 0;
 assign ba0_din_m  = 0;
 assign dip_flip   = flip;
 
-always @* begin
-    case( debug_bus[1:0] )
-        0: debug_view = scrpos[9:2];
-        1: debug_view = { 6'd0, scrpos[1:0] };
-        default: debug_view=0;
-    endcase
-end
+// always @* begin
+//     case( debug_bus[1:0] )
+//         0: debug_view = scrpos[9:2];
+//         1: debug_view = { 6'd0, scrpos[1:0] };
+//         default: debug_view=0;
+//     endcase
+// end
+initial debug_view=0;
 
 // The CPUs/sound use the 24 MHz clock
 jtframe_frac_cen #( .W( 4), .WC( 2)) u_cen24(
@@ -211,7 +212,7 @@ jtkunio_main u_main(
     assign cpu_addr = 0;
     assign cpu_rnw  = 1;
     assign cpu_dout = 0;
-    assign scrpos   = 10'h100;
+    assign scrpos   = 10'h180;
     assign flip     = 0;
 `endif
 

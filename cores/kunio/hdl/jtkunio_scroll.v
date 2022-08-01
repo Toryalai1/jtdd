@@ -39,7 +39,7 @@ module jtkunio_scroll(
     input      [ 7:0]  debug_bus
 );
 
-localparam [8:0] HOFFSET = 9'd16;
+localparam [8:0] HOFFSET = 9'd16+9'd7;
 
 wire [15:0] scan_dout, vram_dout;
 wire [ 1:0] vram_we = { cpu_addr[10], ~cpu_addr[10] } & {2{scr_cs & ~cpu_wrn}};

@@ -112,7 +112,7 @@ end
 assign buf_din = { dr_pal, dr_hflip ?
     {pxl_data[47], pxl_data[31], pxl_data[15] } :
     {pxl_data[32], pxl_data[16], pxl_data[0]} };
-assign buf_we = dr_busy & ~rom_cs & ~buf_addr[8];
+assign buf_we = dr_busy & ~rom_cs;
 
 always @(posedge clk) begin
     rom_okl <= rom_ok;

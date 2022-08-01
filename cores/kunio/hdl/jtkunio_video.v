@@ -75,7 +75,7 @@ wire        Hinit;
 wire        Vinit;
 
 assign h8 = hdump[3];
-assign v8 = vdump[3];
+assign v8 = vdump[3] && (LVBL || vdump[2]);
 assign hf = hdump ^ {9{flip}};
 assign vf = vdump ^ {9{flip}};
 
@@ -83,7 +83,8 @@ assign vf = vdump ^ {9{flip}};
 jtframe_vtimer #(
     .VB_START   ( 9'd240    ),
     .VB_END     ( 9'd8      ),
-    .VCNT_END   ( 9'd255    ),
+    .VS_START   ( 9'd258    ),
+    .VCNT_END   ( 9'd271    ),
     .HB_START   ( 9'd264    ),
     .HB_END     ( 9'd16     ),
     .HCNT_END   ( 9'd383    )
@@ -151,7 +152,7 @@ jtkunio_obj u_obj(
 
     .flip        ( flip             ),
     .hdump       ( hdump            ),
-    .vrender     ( vrender[7:0]     ),
+    .vrender     ( vdump[7:0]       ),
     .hs          ( HS               ),
 
     .cpu_addr    ( cpu_addr[7:0]    ),
