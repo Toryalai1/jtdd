@@ -26,7 +26,7 @@ module jtkunio_colmix(
 
     input      [ 4:0] char_pxl,
     input      [ 5:0] scr_pxl,
-    input      [ 5:0] obj_pxl,
+    input      [ 4:0] obj_pxl,
 
     input             pal_cs,
     input             cpu_wrn,
@@ -67,7 +67,7 @@ always @(posedge clk) begin
         { red, green, blue } <= (!LVBL || !LHBL ) ? 12'd0 : { nr, ng, nb };
         pal_a[7:6] <= { char_blank, obj_blank & char_blank };
         pal_a[5:0] <= !char_blank ? { 1'b0, char_pxl } :
-                      !obj_blank  ? obj_pxl :
+                      !obj_blank  ? { 1'b0,  obj_pxl } :
                       gfx_en[1]   ? scr_pxl : 6'd0;
     end
     if( half )

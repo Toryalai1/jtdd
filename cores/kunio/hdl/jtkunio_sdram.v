@@ -92,10 +92,10 @@ localparam [24:0] BA1_START   = `BA1_START,
                   BA2_START   = `BA2_START,
                   BA3_START   = `BA3_START,
                   SCR_START   = `SCR_START,
-                  SCR_OFFSET  = (SCR_START-BA2_START)>>1,
-                  PCM_OFFSET  = `PCM_OFFSET,
                   PROM_START  = `PROM_START;
 
+localparam [21:0] SCR_OFFSET  = (SCR_START-BA2_START)>>1,
+                  PCM_OFFSET  = `PCM_OFFSET;
 /* verilator lint_on WIDTH */
 
 /* xxverilator tracing_off */

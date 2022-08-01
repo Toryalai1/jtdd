@@ -98,8 +98,7 @@ always @(posedge clk) if(pxl_cen) begin
             pal     <= scan_dout[15:13];
             cur_pal <= pal;
             { code_msb, code } <= scan_dout[10:0];
-            pxl_data          <= {
-                plane0,
+            pxl_data <= { plane0,
                 { rom_data[31:28], rom_data[23:20], rom_data[15:12], rom_data[7:4] }, // plane 1
                 { rom_data[27:24], rom_data[19:16], rom_data[11: 8], rom_data[3:0] }  // plane 2
             };

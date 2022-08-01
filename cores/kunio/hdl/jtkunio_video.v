@@ -66,8 +66,8 @@ module jtkunio_video(
     input      [3:0]   gfx_en
 );
 
-wire [4:0]  char_pxl;
-wire [5:0]  scr_pxl, obj_pxl;
+wire [4:0]  char_pxl, obj_pxl;
+wire [5:0]  scr_pxl;
 wire [8:0]  vdump, vf, hf;
 wire [8:0]  vrender;
 wire [8:0]  hdump;
@@ -148,7 +148,11 @@ jtkunio_obj u_obj(
     .clk         ( clk              ),
     .rst         ( rst              ),
     .pxl_cen     ( pxl_cen          ),
+
     .flip        ( flip             ),
+    .hdump       ( hdump            ),
+    .vrender     ( vrender[7:0]     ),
+    .hs          ( HS               ),
 
     .cpu_addr    ( cpu_addr[7:0]    ),
     .objram_cs   ( objram_cs        ),
