@@ -26,7 +26,7 @@ module jtkunio_obj(
     input      [ 7:0]  vrender,
     input      [ 8:0]  hdump,
 
-    input      [ 7:0]  cpu_addr,
+    input      [ 8:0]  cpu_addr,
     input              objram_cs,
     input              cpu_wrn,
     input      [ 7:0]  cpu_dout,
@@ -42,8 +42,9 @@ module jtkunio_obj(
 
 
 wire        vram_we;
-wire [ 7:0] scan_dout, scan_addr;
-reg  [ 5:0] obj_cnt;
+wire [ 7:0] scan_dout;
+wire [ 8:0] scan_addr;
+reg  [ 6:0] obj_cnt;
 wire [ 4:0] buf_din;
 reg         cen = 0;
 reg  [ 7:0] x, y, ydiff;
@@ -198,7 +199,7 @@ always @* begin
     endcase
 end
 
-jtframe_dual_ram #(.aw(8),.simfile("obj.bin")) u_ram(
+jtframe_dual_ram #(.aw(9),.simfile("obj.bin")) u_ram(
     .clk0   ( clk         ),
     .data0  ( cpu_dout    ),
     .addr0  ( cpu_addr    ),

@@ -157,7 +157,7 @@ jtkunio_obj u_obj(
     .vrender     ( vdump[7:0]       ),
     .hs          ( HS               ),
 
-    .cpu_addr    ( cpu_addr[7:0]    ),
+    .cpu_addr    ( cpu_addr[8:0]    ),
     .objram_cs   ( objram_cs        ),
     .cpu_wrn     ( cpu_wrn          ),
     .cpu_dout    ( cpu_dout         ),
