@@ -70,7 +70,7 @@ assign pcm_addr = { ~pcm_ce[2] ? 2'd2 : ~pcm_ce[1] ? 2'd1 : 2'd0,
                     pcm_msb, pcm_cnt[13:1] };
 
 localparam [7:0] FMGAIN  = 8'h18,
-                 PCMGAIN = 8'h10;
+                 PCMGAIN = 8'h0C;
 
 jtframe_mixer #(.W0(16),.W1(12)) u_mixer(
     .rst    ( rst           ),
