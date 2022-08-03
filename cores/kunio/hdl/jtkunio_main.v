@@ -56,7 +56,7 @@ module jtkunio_main(
     output      [15:0] rom_addr,
     input       [ 7:0] rom_data,
     // MCU ROM
-    input       [ 8:0] prog_addr,
+    input       [10:0] prog_addr,
     input       [ 7:0] prog_data,
     input              prog_we
 );
@@ -194,10 +194,10 @@ T65 u_cpu(
     .DO     ( cpu_dout  )
 );
 
-wire [8:0] mcu_addr;
-wire [7:0] mcu_data;
-wire       mcu_wrn = p2_out[2];
-wire       mcu_rdn = p2_out[1];
+wire [10:0] mcu_addr;
+wire [ 7:0] mcu_data;
+wire        mcu_wrn = p2_out[2];
+wire        mcu_rdn = p2_out[1];
 
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
@@ -221,7 +221,7 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
-jtframe_prom #(.aw(9)) u_mcu_prom (
+jtframe_prom #(.aw(11)) u_mcu_prom (
     .clk    ( clk       ),
     .cen    ( 1'b1      ),
     .data   ( prog_data ),
@@ -231,7 +231,7 @@ jtframe_prom #(.aw(9)) u_mcu_prom (
     .q      ( mcu_data  )
 );
 
-jtframe_6801mcu #(.MAXPORT(7),.ROMW(9)) u_mcu (
+jtframe_6801mcu #(.MAXPORT(7),.ROMW(11)) u_mcu (
     .rst        ( rst           ),
     .clk        ( clk           ),
     .cen        ( cen_3         ),
