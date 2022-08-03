@@ -53,21 +53,25 @@ module jtkunio_main(
     input              rom_ok,
     output reg         rom_cs,
     output      [15:0] rom_addr,
-    input       [ 7:0] rom_data
+    input       [ 7:0] rom_data,
+    // MCU ROM
+    input       [ 8:0] prog_addr,
+    input       [ 7:0] prog_data,
+    input              prog_we
 );
 
 wire [15:0] cpu_addr;
-reg  [ 7:0] cpu_din, cab_dout;
+reg  [ 7:0] cpu_din, cab_dout, mcu_dout, mcu_din;
 reg         bank, bank_cs, io_cs, flip_cs,
             scrpos0_cs, scrpos1_cs,
-            irq_clr, nmi_clr, main2mcu_cs;
+            mcu_irq, mcu_stn,
+            irq_clr, nmi_clr, mcu_clr, main2mcu_cs, mcu2main_cs;
 wire        rdy, irqn, nmi_n;
-wire [ 1:0] mcu_st;
+wire [ 7:0] p1_out, p2_out;
 
 assign rom_addr = { cpu_addr[15], cpu_addr[15] ? cpu_addr[14] : bank, cpu_addr[13:0] };
 assign rdy      = ~rom_cs | rom_ok;
 assign bus_addr = cpu_addr[12:0];
-assign mcu_st   = 0;
 assign nmi_n    = LVBL & dip_pause;
 
 always @* begin
@@ -85,6 +89,8 @@ always @* begin
     scrpos0_cs  = 0;
     scrpos1_cs  = 0;
     main2mcu_cs = 0;
+    mcu2main_cs = 0;
+    mcu_clr     = 0;
     if( cpu_addr[15:14]>= 1 ) begin
         rom_cs = 1;
     end else begin
@@ -100,8 +106,14 @@ always @* begin
                     1: scrpos1_cs = !cpu_rnw;
                     2: snd_irq = !cpu_rnw;
                     3: flip_cs = !cpu_rnw;
-                    4: main2mcu_cs = 1;
-                    5: bank_cs = !cpu_rnw;
+                    4: begin
+                        main2mcu_cs = !cpu_rnw;
+                        mcu2main_cs =  cpu_rnw;
+                    end
+                    5: begin
+                        bank_cs = !cpu_rnw;
+                        mcu_clr =  cpu_rnw;
+                    end
                     6: nmi_clr = 1;
                     7: irq_clr = 1;
                 endcase
@@ -114,19 +126,20 @@ always @(posedge clk) begin
     case( cpu_addr[1:0] )
         0: cab_dout <= { start, joystick1[5:4], joystick1[2], joystick1[3], joystick1[1:0] };
         1: cab_dout <= { coin,  joystick2[5:4], joystick2[2], joystick2[3], joystick2[1:0] };
-        2: cab_dout <= { service, ~LVBL, mcu_st,
+        2: cab_dout <= { service, ~LVBL, mcu_stn, ~mcu_irq,
                         joystick2[6], joystick1[6], dipsw_b[1:0] };
         3: cab_dout <= dipsw_a;
     endcase
 end
 
 always @* begin
-    cpu_din = rom_cs    ? rom_data :
-              ram_cs    ? ram_dout :
-              objram_cs ? obj_dout :
-              scrram_cs ? scr_dout :
-              pal_cs    ? pal_dout :
-              io_cs     ? cab_dout : 8'hff;
+    cpu_din = rom_cs      ? rom_data :
+              ram_cs      ? ram_dout :
+              objram_cs   ? obj_dout :
+              scrram_cs   ? scr_dout :
+              pal_cs      ? pal_dout :
+              mcu2main_cs ? mcu_dout :
+              io_cs       ? cab_dout : 8'hff;
 end
 
 always @(posedge clk, posedge rst) begin
@@ -178,6 +191,75 @@ T65 u_cpu(
     .A      ( cpu_addr  ),
     .DI     ( cpu_din   ),
     .DO     ( cpu_dout  )
+);
+
+wire [8:0] mcu_addr;
+wire [7:0] mcu_data;
+wire       mcu_wrn = p2_out[2];
+wire       mcu_rdn = p2_out[1];
+
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        mcu_dout <= 0;
+        mcu_din  <= 0;
+        mcu_stn  <= 1;
+        mcu_irq  <= 0;
+    end else begin
+        if( !mcu_wrn ) begin
+            mcu_dout <= p1_out;
+            mcu_stn  <= 0;
+        end
+        if( main2mcu_cs ) begin
+            mcu_irq <= 1;
+            mcu_din <= cpu_dout;
+        end
+        if( !mcu_rdn || mcu_clr ) begin
+            mcu_irq <= 0;
+        end
+        if( mcu_clr ) mcu_stn <= 1;
+    end
+end
+
+jtframe_prom #(.aw(9)) u_mcu_prom (
+    .clk    ( clk       ),
+    .cen    ( 1'b1      ),
+    .data   ( prog_data ),
+    .rd_addr( mcu_addr  ),
+    .wr_addr( prog_addr ),
+    .we     ( prog_we   ),
+    .q      ( mcu_data  )
+);
+
+jtframe_6801mcu #(.MAXPORT(7),.ROMW(9)) u_mcu (
+    .rst        ( rst           ),
+    .clk        ( clk           ),
+    .cen        ( cen_3         ),
+    .wait_cen   (               ),
+    .wrn        (               ),
+    .vma        ( mcu_vma       ),
+    .addr       (               ),
+    .dout       (               ),
+    .halt       ( 1'b0          ),
+    .halted     (               ),
+    .irq        ( mcu_irq       ), // active high
+    .nmi        ( 1'b0          ),
+    // Ports
+    .p1_in      ( mcu_din       ),
+    .p1_out     ( p1_out        ),
+    .p2_in      ( 8'hff         ), // feed back p2_out for sims
+    .p2_out     ( p2_out        ),
+    .p3_in      ( {4'd0, 2'b11, mcu_stn, ~mcu_irq } ),
+    .p3_out     (               ),
+    .p4_in      ( 8'hff         ), // feed back p4_out for sims
+    .p4_out     (               ),
+    // external RAM
+    .ext_cs     ( 1'b0          ),
+    .ext_dout   (               ),
+    // ROM interface
+    .rom_addr   ( mcu_addr      ),
+    .rom_data   ( mcu_data      ),
+    .rom_cs     (               ),
+    .rom_ok     ( 1'b1          )
 );
 
 endmodule

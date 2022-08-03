@@ -84,7 +84,8 @@ module jtkunio_sdram(
     output           prog_we,
     output           prog_rd,
     input            prog_ack,
-    input            prog_rdy
+    input            prog_rdy,
+    output           prom_we
 );
 
 /* verilator lint_off WIDTH */
@@ -100,7 +101,7 @@ localparam [21:0] SCR_OFFSET  = (SCR_START-BA2_START)>>1,
 
 /* xxverilator tracing_off */
 
-wire        is_char, is_scr, is_obj, prom_we;
+wire        is_char, is_scr, is_obj;
 reg  [24:0] post_addr;
 wire        gfx_cs;
 

@@ -115,7 +115,7 @@ wire [ 7:0] main_data, pcm_data, snd_data;
 wire [ 9:0] scrpos;
 wire        main_ok, snd_ok, pcm_ok,
             char_ok, scr_ok, obj_ok;
-wire        flip;
+wire        flip, prom_we;
 
 assign cen_12     = cen24[0];
 assign cen_6      = cen24[1];
@@ -198,7 +198,12 @@ jtkunio_main u_main(
     .rom_addr    ( main_addr    ),
     .rom_cs      ( main_cs      ),
     .rom_data    ( main_data    ),
-    .rom_ok      ( main_ok      )
+    .rom_ok      ( main_ok      ),
+
+    // MCU PROM
+    .prog_addr   (prog_addr[8:0]),
+    .prog_data   ( prog_data    ),
+    .prog_we     ( prom_we      )
 );
 `else
     assign main_cs  = 0;
@@ -361,7 +366,8 @@ jtkunio_sdram u_sdram(
     .prog_we    ( prog_we       ),
     .prog_rd    ( prog_rd       ),
     .prog_ack   ( prog_ack      ),
-    .prog_rdy   ( prog_rdy      )
+    .prog_rdy   ( prog_rdy      ),
+    .prom_we    ( prom_we       )
 );
 
 endmodule
