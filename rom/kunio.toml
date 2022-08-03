@@ -24,7 +24,7 @@ name="jtkunio"
 
 [dipsw]
 # Flip screen not supported
-delete = [ "Unused", "Unknown", "Flip Screen" ]
+delete = [ "Unused", "Unknown", "Flip Screen", "Cabinet" ]
 bitcnt = 16
 
 

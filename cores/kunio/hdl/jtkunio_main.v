@@ -220,7 +220,7 @@ always @(posedge clk, posedge rst) begin
         if( mcu_clr ) mcu_stn <= 1;
     end
 end
-
+/*
 jtframe_prom #(.aw(11)) u_mcu_prom (
     .clk    ( clk       ),
     .cen    ( 1'b1      ),
@@ -262,5 +262,5 @@ jtframe_6801mcu #(.MAXPORT(7),.ROMW(11)) u_mcu (
     .rom_cs     (               ),
     .rom_ok     ( 1'b1          )
 );
-
+*/
 endmodule

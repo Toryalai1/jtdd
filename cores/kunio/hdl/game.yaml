@@ -18,7 +18,6 @@ jtframe:
     get:
       - jtframe_6809.yaml
       - t65/t65.yaml
-      - jtframe_6801mcu.yaml
   - get:
       - jtframe_ff.v
       - jtframe_sort.v
