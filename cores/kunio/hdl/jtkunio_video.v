@@ -79,16 +79,15 @@ assign v8 = vdump[3] && (LVBL || vdump[2]);
 assign hf = hdump ^ {9{flip}};
 assign vf = vdump ^ {9{flip}};
 
-// Easy numbers for now
 jtframe_vtimer #(
-    .VB_START   ( 9'd240    ),
+    .VB_START   ( 9'd246    ), // VB lasts for 34 lines in hardware
     .VB_END     ( 9'd8      ),
     .VS_START   ( 9'd258    ),
-    .VCNT_END   ( 9'd271    ),
-    .HB_START   ( 9'd260    ),
+    .VCNT_END   ( 9'd271    ), // 272 lines measured
+    .HB_START   ( 9'd260    ), // 21.30us in hardware
     .HB_END     ( 9'd16     ),
-    .HS_START   ( 9'd319    ),
-    .HS_END     ( 9'd319+9'd32 ),
+    .HS_START   ( 9'd315    ),
+    .HS_END     ( 9'd315+9'd32 ),
     .HCNT_END   ( 9'd383    )
 ) u_vtimer (
     .clk     ( clk          ),
