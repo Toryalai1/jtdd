@@ -160,6 +160,7 @@ jtframe_frac_cen #( .W( 2), .WC( 4)) u_cen48(
 jtkunio_main u_main(
     .rst         ( rst24        ),
     .clk         ( clk24        ),
+    .cen_3       ( cen_3        ),
     .cen_1p5     ( cen_1p5      ),
     .LVBL        ( LVBL         ),
     .v8          ( v8           ),

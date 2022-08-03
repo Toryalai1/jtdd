@@ -19,6 +19,7 @@
 module jtkunio_main(
     input              clk,        // 24 MHz
     input              rst,
+    input              cen_3,
     input              cen_1p5,
     input              LVBL,
     input              v8,
