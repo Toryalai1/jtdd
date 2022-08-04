@@ -14,7 +14,7 @@ sourcefile="renegade.cpp"
 skip.bootlegs=true
 
 [buttons]
-core=4 # max number of buttons supported by the core
+core=$JTFRAME_BUTTONS # max number of buttons supported by the core
 Names = [
     { names="Hit Left,Jump,Hit Right"},
 ]
