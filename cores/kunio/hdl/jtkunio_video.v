@@ -84,7 +84,7 @@ jtframe_vtimer #(
     .VB_END     ( 9'd8      ),
     .VS_START   ( 9'd258    ),
     .VCNT_END   ( 9'd271    ), // 272 lines measured
-    .HB_START   ( 9'd260    ), // 21.30us in hardware
+    .HB_START   ( 9'd268    ), // 21.30us in hardware
     .HB_END     ( 9'd16     ),
     .HS_START   ( 9'd315    ),
     .HS_END     ( 9'd315+9'd32 ),
