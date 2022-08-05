@@ -1,5 +1,8 @@
 rom/*.rom
 *.xml
+*.rom
+*.arc
+test.cpp
 *.bak
 cores/*/mister/*
 cores/*/mist/*
