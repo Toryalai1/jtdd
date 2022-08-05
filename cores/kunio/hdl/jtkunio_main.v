@@ -170,6 +170,22 @@ jtframe_ff u_ff (
     .sigedge( v8        )
 );
 
+jtframe_mos6502 u_cpu(
+    .rst    ( rst       ),
+    .clk    ( clk       ),    // FPGA clock
+    .cen    ( cen_3     ),    // 2x 6502 clock
+
+    .so     ( 1'b1      ),
+    .rdy    ( 1'b1      ),
+    .nmi    ( nmi_n     ),
+    .irq    ( irqn      ),
+    .dbi    ( cpu_din   ),
+    .dbo    ( cpu_dout  ),
+    .rw     ( cpu_rnw   ),
+    .sync   (           ),
+    .ab     ( cpu_addr  )
+);
+/*
 T65 u_cpu(
     .Mode   ( 2'd0      ),  // 6502 mode
     .Res_n  ( ~rst      ),
@@ -192,7 +208,7 @@ T65 u_cpu(
     .A      ( cpu_addr  ),
     .DI     ( cpu_din   ),
     .DO     ( cpu_dout  )
-);
+);*/
 
 wire [10:0] mcu_addr;
 wire [ 7:0] mcu_data;
