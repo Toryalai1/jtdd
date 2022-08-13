@@ -25,9 +25,9 @@
                            source ="https://github.com/jotego"
                            twitter="@topapate"/>
 	<name>Double Dragon II - The Revenge (US)</name>
+	<setname>ddragon2u</setname>
 	<mameversion>0217</mameversion>
 	<mratimestamp>20220813</mratimestamp>
-	<setname>ddragon2u</setname>
 	<year>1988</year>
 	<manufacturer>Technos Japan</manufacturer>
 	<category>Fighter / Hero</category>
