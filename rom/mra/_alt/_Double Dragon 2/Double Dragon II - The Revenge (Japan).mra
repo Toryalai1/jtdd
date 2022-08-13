@@ -25,8 +25,8 @@
                            source ="https://github.com/jotego"
                            twitter="@topapate"/>
 	<name>Double Dragon II - The Revenge (Japan)</name>
-	<mameversion>0223</mameversion>
 	<setname>ddragon2j</setname>
+	<mameversion>0223</mameversion>
 	<mratimestamp>20220813</mratimestamp>
 	<year>1988</year>
 	<manufacturer>Technos Japan</manufacturer>
