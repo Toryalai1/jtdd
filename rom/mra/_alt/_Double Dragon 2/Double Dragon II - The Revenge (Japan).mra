@@ -26,7 +26,8 @@
                            twitter="@topapate"/>
 	<name>Double Dragon II - The Revenge (Japan)</name>
 	<mameversion>0223</mameversion>
-	<mratimestamp>20210619</mratimestamp>
+	<setname>ddragon2j</setname>
+	<mratimestamp>20220813</mratimestamp>
 	<year>1988</year>
 	<manufacturer>Technos Japan</manufacturer>
 	<category>Fighter / Hero</category>
